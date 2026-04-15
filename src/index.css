@@ -1,0 +1,139 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 40% 98%;
+    --foreground: 215 25% 17%;
+    --card: 0 0% 100%;
+    --card-foreground: 215 25% 17%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 25% 17%;
+    --primary: 201 96% 39%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 174 55% 35%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 174 55% 35%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 201 96% 39%;
+    --radius: 0.75rem;
+
+    --glass-bg: 0 0% 100% / 0.7;
+    --glass-border: 0 0% 100% / 0.3;
+    --glass-shadow: 201 96% 39% / 0.1;
+    --gradient-primary: linear-gradient(135deg, hsl(201 96% 39%), hsl(174 55% 35%));
+    --gradient-hero: linear-gradient(135deg, hsl(210 40% 98%), hsl(201 96% 39% / 0.05), hsl(174 55% 35% / 0.08));
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100% / 0.9), hsl(0 0% 100% / 0.5));
+    --gradient-mesh: radial-gradient(ellipse at 20% 50%, hsl(201 96% 39% / 0.08) 0%, transparent 50%),
+                     radial-gradient(ellipse at 80% 20%, hsl(174 55% 35% / 0.06) 0%, transparent 50%),
+                     radial-gradient(ellipse at 50% 80%, hsl(201 96% 60% / 0.04) 0%, transparent 50%);
+
+    --sidebar-background: 210 40% 98%;
+    --sidebar-foreground: 215 25% 17%;
+    --sidebar-primary: 201 96% 39%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 174 55% 35%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 214 32% 91%;
+    --sidebar-ring: 201 96% 39%;
+  }
+
+  .dark {
+    --background: 222 47% 11%;
+    --foreground: 210 40% 96%;
+    --card: 217 33% 17%;
+    --card-foreground: 210 40% 96%;
+    --popover: 217 33% 17%;
+    --popover-foreground: 210 40% 96%;
+    --primary: 201 96% 45%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 174 55% 40%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 217 33% 22%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 174 55% 40%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 217 33% 25%;
+    --input: 217 33% 25%;
+    --ring: 201 96% 45%;
+
+    --glass-bg: 217 33% 17% / 0.7;
+    --glass-border: 217 33% 30% / 0.3;
+    --glass-shadow: 201 96% 45% / 0.15;
+    --gradient-primary: linear-gradient(135deg, hsl(201 96% 45%), hsl(174 55% 40%));
+    --gradient-hero: linear-gradient(135deg, hsl(222 47% 11%), hsl(201 96% 45% / 0.1), hsl(174 55% 40% / 0.08));
+    --gradient-card: linear-gradient(145deg, hsl(217 33% 17% / 0.9), hsl(217 33% 17% / 0.5));
+    --gradient-mesh: radial-gradient(ellipse at 20% 50%, hsl(201 96% 45% / 0.12) 0%, transparent 50%),
+                     radial-gradient(ellipse at 80% 20%, hsl(174 55% 40% / 0.1) 0%, transparent 50%),
+                     radial-gradient(ellipse at 50% 80%, hsl(201 96% 60% / 0.06) 0%, transparent 50%);
+
+    --sidebar-background: 222 47% 11%;
+    --sidebar-foreground: 210 40% 96%;
+    --sidebar-primary: 201 96% 45%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 174 55% 40%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 217 33% 25%;
+    --sidebar-ring: 201 96% 45%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    background: hsl(var(--glass-bg));
+    border: 1px solid hsl(var(--glass-border));
+    box-shadow: 0 8px 32px hsl(var(--glass-shadow));
+    pointer-events: auto;
+  }
+  .gradient-text {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .mesh-bg {
+    background-image: var(--gradient-mesh);
+  }
+  .gradient-primary-bg {
+    background: var(--gradient-primary);
+  }
+  .hero-gradient {
+    background: var(--gradient-hero);
+  }
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  button, a, input, textarea {
+    pointer-events: auto !important;
+  }
+}
