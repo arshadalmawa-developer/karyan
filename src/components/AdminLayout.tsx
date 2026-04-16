@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, BookOpen, Image, Building2, GraduationCap,
   MessageSquare, Quote, FileText, Menu, X, Sun, Moon, ArrowLeft,
+  LogOut,
 } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
 import logo from '@/assets/logo.png';
@@ -26,6 +27,11 @@ export const AdminLayout = ({ children }: { children: ReactNode }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
   const { isDark, toggle } = useTheme();
+
+  const handleLogout = () => {
+    localStorage.removeItem('isAdminAuthenticated');
+    window.location.href = '/admin/login';
+  };
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -115,6 +121,13 @@ export const AdminLayout = ({ children }: { children: ReactNode }) => {
           <div className="flex items-center gap-2">
             <button onClick={toggle} className="p-2 rounded-lg hover:bg-muted transition-colors">
               {isDark ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
+            <button 
+              onClick={handleLogout}
+              className="p-2 rounded-lg hover:bg-muted transition-colors text-muted-foreground hover:text-destructive"
+              title="Logout"
+            >
+              <LogOut size={18} />
             </button>
             <div className="w-8 h-8 rounded-full gradient-primary-bg flex items-center justify-center text-primary-foreground text-xs font-bold">A</div>
           </div>

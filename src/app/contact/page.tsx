@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Phone, Mail, MapPin, Send } from 'lucide-react';
-import { PageLayout } from '@/components/PageLayout';
+import PageLayout from '@/components/PageLayout';
 import { ScrollReveal } from '@/components/ScrollReveal';
 import { SectionHeading } from '@/components/SectionHeading';
 import { FloatingActions } from '@/components/FloatingActions';

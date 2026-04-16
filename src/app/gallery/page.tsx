@@ -1,13 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ZoomIn } from 'lucide-react';
-import { PageLayout } from '@/components/PageLayout';
+import PageLayout from '@/components/PageLayout';
 import { ScrollReveal } from '@/components/ScrollReveal';
 import { SectionHeading } from '@/components/SectionHeading';
 import { FloatingActions } from '@/components/FloatingActions';
-import { galleryImages } from '@/data/mockData';
+import { galleryStorage } from '@/utils/galleryStorage';
 
 const colors = [
   'from-primary/30 to-secondary/30',
@@ -18,6 +18,42 @@ const colors = [
 const GalleryPage = () => {
   const [lightbox, setLightbox] = useState<number | null>(null);
   const [filter, setFilter] = useState('All');
+  const [galleryImages, setGalleryImages] = useState<any[]>([]);
+
+  useEffect(() => {
+    // Load gallery images from storage
+    const loadGalleryImages = async () => {
+      if (typeof window !== 'undefined') {
+        try {
+          const images = await galleryStorage.getGalleryImages();
+          setGalleryImages(images);
+        } catch (error) {
+          console.error('Failed to load gallery images:', error);
+        }
+      }
+    };
+    
+    loadGalleryImages();
+  }, []);
+
+  useEffect(() => {
+    // Listen for storage changes to refresh gallery
+    const handleStorageChange = async () => {
+      try {
+        const images = await galleryStorage.getGalleryImages();
+        setGalleryImages(images);
+      } catch (error) {
+        console.error('Failed to refresh gallery images:', error);
+      }
+    };
+
+    // Custom event for MongoDB updates
+    if (typeof window !== 'undefined') {
+      window.addEventListener('mongodb-gallery-update', handleStorageChange);
+      return () => window.removeEventListener('mongodb-gallery-update', handleStorageChange);
+    }
+  }, []);
+
   const categories = ['All', ...Array.from(new Set(galleryImages.map(g => g.category)))];
   const filtered = filter === 'All' ? galleryImages : galleryImages.filter(g => g.category === filter);
 
@@ -54,11 +90,15 @@ const GalleryPage = () => {
                     exit={{ opacity: 0, scale: 0.8 }}
                     whileHover={{ scale: 1.05, zIndex: 10 }}
                     onClick={() => setLightbox(img.id)}
-                    className={`relative rounded-2xl overflow-hidden cursor-pointer group aspect-square bg-gradient-to-br ${colors[i % 3]}`}
+                    className={`relative rounded-2xl overflow-hidden cursor-pointer group aspect-square ${img.imageUrl ? '' : `bg-gradient-to-br ${colors[i % 3]}`}`}
                   >
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-foreground/60 font-display font-bold text-lg">{img.title}</span>
-                    </div>
+                    {img.imageUrl ? (
+                      <img src={img.imageUrl} alt={img.title} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <span className="text-foreground/60 font-display font-bold text-lg">{img.title}</span>
+                      </div>
+                    )}
                     <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/20 transition-colors flex items-center justify-center">
                       <ZoomIn className="text-primary-foreground opacity-0 group-hover:opacity-100 transition-opacity" size={32} />
                     </div>
@@ -80,6 +120,15 @@ const GalleryPage = () => {
             className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-foreground/80"
             onClick={() => setLightbox(null)}
           >
+            {/* X button on the overlay background */}
+            <button 
+              onClick={() => setLightbox(null)} 
+              className="absolute top-4 right-4 p-3 rounded-full bg-background/80 text-foreground hover:bg-background transition-colors z-50"
+              title="Close"
+            >
+              <X size={24} />
+            </button>
+            
             <motion.div
               initial={{ scale: 0.5 }}
               animate={{ scale: 1 }}
@@ -88,13 +137,14 @@ const GalleryPage = () => {
               className="glass-panel rounded-3xl p-8 max-w-md w-full text-center"
               onClick={(e) => e.stopPropagation()}
             >
-              <button onClick={() => setLightbox(null)} className="absolute top-4 right-4 p-2 rounded-lg hover:bg-muted transition-colors">
-                <X size={20} />
-              </button>
-              <div className={`aspect-video rounded-2xl bg-gradient-to-br ${colors[lightbox % 3]} flex items-center justify-center mb-4`}>
-                <span className="text-foreground/60 font-display font-bold text-xl">
-                  {galleryImages.find(g => g.id === lightbox)?.title}
-                </span>
+              <div className={`aspect-video rounded-2xl ${galleryImages.find(g => g.id === lightbox)?.imageUrl ? '' : `bg-gradient-to-br ${colors[lightbox % 3]}`} flex items-center justify-center mb-4`}>
+                {galleryImages.find(g => g.id === lightbox)?.imageUrl ? (
+                  <img src={galleryImages.find(g => g.id === lightbox)?.imageUrl} alt={galleryImages.find(g => g.id === lightbox)?.title} className="w-full h-full object-cover rounded-2xl" />
+                ) : (
+                  <span className="text-foreground/60 font-display font-bold text-xl">
+                    {galleryImages.find(g => g.id === lightbox)?.title}
+                  </span>
+                )}
               </div>
               <p className="font-display font-semibold">{galleryImages.find(g => g.id === lightbox)?.title}</p>
               <p className="text-sm text-muted-foreground">{galleryImages.find(g => g.id === lightbox)?.category}</p>

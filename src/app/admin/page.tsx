@@ -1,25 +1,71 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
 import { Users, BookOpen, Building2, MessageSquare, TrendingUp, GraduationCap } from 'lucide-react';
 import { AdminLayout } from '@/components/AdminLayout';
-import { courses, facilities, testimonials, enquiries } from '@/data/mockData';
+import { courses, facilities, testimonials } from '@/data/mockData';
+import { enquiryStorage } from '@/utils/enquiryStorage';
+import { useRouter } from 'next/navigation';
 
-const dashCards = [
-  { label: 'Total Students', value: '500+', icon: Users, change: '+12%' },
-  { label: 'Courses', value: courses.length.toString(), icon: BookOpen, change: '+2' },
-  { label: 'Facilities', value: facilities.length.toString(), icon: Building2, change: '' },
-  { label: 'Testimonials', value: testimonials.length.toString(), icon: GraduationCap, change: '+1' },
-  { label: 'Enquiries', value: enquiries.length.toString(), icon: MessageSquare, change: '+5' },
-  { label: 'Growth', value: '24%', icon: TrendingUp, change: '+3%' },
-];
+const AdminDashboard = () => {
+  const router = useRouter();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [enquiries, setEnquiries] = useState<any[]>([]);
 
-const AdminDashboard = () => (
-  <AdminLayout>
-    <div className="mb-6">
-      <h1 className="text-2xl font-display font-bold gradient-text">Dashboard Overview</h1>
-      <p className="text-sm text-muted-foreground">Welcome to Karyon College Admin Panel</p>
-    </div>
+  useEffect(() => {
+    // Only check localStorage on client side
+    const checkAuth = () => {
+      const authenticated = localStorage.getItem('isAdminAuthenticated') === 'true';
+      setIsAuthenticated(authenticated);
+      setIsLoading(false);
+      
+      if (!authenticated) {
+        router.push('/admin/login');
+      }
+    };
+
+    checkAuth();
+  }, [router]);
+
+  useEffect(() => {
+    // Load enquiries from storage
+    const loadEnquiries = async () => {
+      if (typeof window !== 'undefined') {
+        try {
+          const enquiriesData = await enquiryStorage.getEnquiries();
+          setEnquiries(enquiriesData);
+        } catch (error) {
+          console.error('Failed to load enquiries:', error);
+          setEnquiries([]); // Set empty array on error
+        }
+      }
+    };
+    
+    loadEnquiries();
+  }, []);
+
+  const dashCards = [
+    { label: 'Total Students', value: '500+', icon: Users, change: '+12%' },
+    { label: 'Courses', value: courses.length.toString(), icon: BookOpen, change: '+2' },
+    { label: 'Facilities', value: facilities.length.toString(), icon: Building2, change: '' },
+    { label: 'Testimonials', value: testimonials.length.toString(), icon: GraduationCap, change: '+1' },
+    { label: 'Enquiries', value: enquiries?.length?.toString() || '0', icon: MessageSquare, change: '+5' },
+    { label: 'Growth', value: '24%', icon: TrendingUp, change: '+3%' },
+  ];
+
+  // Show loading state while checking authentication
+  if (isLoading || !isAuthenticated) {
+    return null;
+  }
+
+  return (
+    <AdminLayout>
+      <div className="mb-6">
+        <h1 className="text-2xl font-display font-bold gradient-text">Dashboard Overview</h1>
+        <p className="text-sm text-muted-foreground">Welcome to Karyon College Admin Panel</p>
+      </div>
 
     <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
       {dashCards.map((c, i) => (
@@ -75,7 +121,8 @@ const AdminDashboard = () => (
         </table>
       </div>
     </div>
-  </AdminLayout>
-);
+    </AdminLayout>
+  );
+};
 
 export default AdminDashboard;

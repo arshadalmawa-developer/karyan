@@ -1,6 +1,10 @@
 {
+  "/facilities/page": "app/facilities/page.js",
+  "/contact/page": "app/contact/page.js",
+  "/gallery/page": "app/gallery/page.js",
   "/page": "app/page.js",
-  "/admin/courses/page": "app/admin/courses/page.js",
+  "/admissions/page": "app/admissions/page.js",
+  "/api/gallery/route": "app/api/gallery/route.js",
   "/admin/page": "app/admin/page.js",
-  "/admin/gallery/page": "app/admin/gallery/page.js"
+  "/admin/facilities/page": "app/admin/facilities/page.js"
 }

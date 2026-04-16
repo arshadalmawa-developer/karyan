@@ -3,7 +3,7 @@ import { Navbar } from './Navbar';
 import { Footer } from './Footer';
 import { ScrollProgress } from './ScrollProgress';
 
-export const PageLayout = ({ children }: { children: ReactNode }) => (
+const PageLayout: React.FC<{ children: ReactNode }> = ({ children }) => (
   <>
     <ScrollProgress />
     <Navbar />
@@ -13,3 +13,5 @@ export const PageLayout = ({ children }: { children: ReactNode }) => (
     <Footer />
   </>
 );
+
+export default PageLayout;

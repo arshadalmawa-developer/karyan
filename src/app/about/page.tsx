@@ -1,6 +1,6 @@
 'use client';
 
-import { PageLayout } from '@/components/PageLayout';
+import PageLayout from '@/components/PageLayout';
 import { FloatingActions } from '@/components/FloatingActions';
 import { SectionHeading } from '@/components/SectionHeading';
 import { ScrollReveal } from '@/components/ScrollReveal';

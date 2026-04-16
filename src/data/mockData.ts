@@ -41,6 +41,16 @@ export const testimonials = [
   { id: 2, name: "Rahul Patel", course: "B.Sc. Radiology", year: "2022", text: "The faculty here genuinely cares about student success. The hands-on experience with modern imaging equipment gave me an edge in the job market.", avatar: "RP" },
   { id: 3, name: "Anjali Desai", course: "B.Sc. OTT", year: "2023", text: "From day one, the college focused on practical skills. The operation theatre simulations prepared me thoroughly for real clinical environments.", avatar: "AD" },
   { id: 4, name: "Vikram Singh", course: "Diploma MLT", year: "2022", text: "Affordable fees with premium education. The library resources and lab access helped me excel in my studies and career.", avatar: "VS" },
+  { id: 5, name: "Neha Gupta", course: "B.Sc. Optometry", year: "2023", text: "The optometry program exceeded my expectations. The clinical exposure and patient interaction training made me job-ready from day one.", avatar: "NG" },
+  { id: 6, name: "Amit Kumar", course: "B.Sc. Dialysis", year: "2022", text: "Excellent dialysis training with real patient cases. The faculty's industry connections helped me get placed in a top hospital.", avatar: "AK" },
+  { id: 7, name: "Sneha Joshi", course: "Diploma Radiology", year: "2023", text: "Best decision to join Karyon College. The radiology equipment and safety training prepared me perfectly for hospital work.", avatar: "SJ" },
+  { id: 8, name: "Raj Verma", course: "B.Sc. Cardiac Care", year: "2022", text: "The cardiac care program is comprehensive. From ECG to cardiac catheterization, the training covered everything I needed.", avatar: "RV" },
+  { id: 9, name: "Pooja Mehta", course: "B.Sc. MLT", year: "2023", text: "Amazing campus life and excellent academics. The research projects and lab work gave me confidence to handle complex diagnostic procedures.", avatar: "PM" },
+  { id: 10, name: "Karan Shah", course: "Diploma MLT", year: "2022", text: "The diploma program is intensive but rewarding. The practical skills I learned helped me get multiple job offers immediately after graduation.", avatar: "KS" },
+  { id: 11, name: "Divya Patel", course: "B.Sc. Radiology", year: "2023", text: "State-of-the-art radiology equipment and expert faculty. The internship program gave me hands-on experience in real hospital settings.", avatar: "DP" },
+  { id: 12, name: "Rohit Sharma", course: "B.Sc. OTT", year: "2022", text: "The operation theatre technology training is exceptional. Simulation labs and real surgical exposure prepared me for the OR environment.", avatar: "RS" },
+  { id: 13, name: "Anita Desai", course: "B.Sc. Optometry", year: "2023", text: "Comprehensive optometry education with modern equipment. The clinical rotations in eye hospitals were invaluable for practical learning.", avatar: "AD" },
+  { id: 14, name: "Vijay Kumar", course: "B.Sc. Dialysis", year: "2022", text: "The dialysis technology program is well-structured. Expert faculty and modern dialysis machines gave me excellent practical training.", avatar: "VK" },
 ];
 
 export const admissionSteps = [

@@ -1,36 +1,88 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Edit, Trash2, X } from 'lucide-react';
 import { AdminLayout } from '@/components/AdminLayout';
-import { facilities as initial } from '@/data/mockData';
+import { facilityStorage } from '@/utils/facilityStorage';
 import { toast } from 'sonner';
 
 const AdminFacilities = () => {
-  const [items, setItems] = useState(initial);
-  const [modal, setModal] = useState<{ open: boolean; editing: typeof initial[0] | null }>({ open: false, editing: null });
+  const [items, setItems] = useState<any[]>([]);
+  const [modal, setModal] = useState<{ open: boolean; editing: any | null }>({ open: false, editing: null });
   const [form, setForm] = useState({ title: '', description: '' });
 
-  const openEdit = (f: typeof initial[0]) => {
+  useEffect(() => {
+    // Load facilities from storage
+    if (typeof window !== 'undefined') {
+      setItems(facilityStorage.getFacilities());
+    }
+  }, []);
+
+  useEffect(() => {
+    // Listen for storage changes to refresh facilities
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'facilities') {
+        setItems(facilityStorage.getFacilities());
+      }
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('storage', handleStorageChange);
+      return () => window.removeEventListener('storage', handleStorageChange);
+    }
+  }, []);
+
+  const openEdit = (f: any) => {
     setForm({ title: f.title, description: f.description });
     setModal({ open: true, editing: f });
   };
 
-  const save = () => {
-    if (modal.editing) {
-      setItems(prev => prev.map(i => i.id === modal.editing!.id ? { ...i, ...form } : i));
-      toast.success('Facility updated');
-    } else {
-      setItems(prev => [...prev, { id: Date.now(), ...form, image: 'new', icon: 'Building2' }]);
-      toast.success('Facility added');
+  const save = async () => {
+    try {
+      if (modal.editing) {
+        facilityStorage.updateFacility(modal.editing.id, form);
+        setItems(prev => prev.map(i => i.id === modal.editing!.id ? { ...i, ...form } : i));
+        toast.success('Facility updated');
+      } else {
+        facilityStorage.addFacility(form);
+        setItems(facilityStorage.getFacilities());
+        toast.success('Facility added');
+      }
+      
+      // Dispatch storage event to notify other components
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new StorageEvent('storage', {
+          key: 'facilities',
+          newValue: localStorage.getItem('facilities')
+        }));
+      }
+      
+      setModal({ open: false, editing: null });
+      setForm({ title: '', description: '' });
+    } catch (error) {
+      console.error('Error saving facility:', error);
+      toast.error('Failed to save facility');
     }
-    setModal({ open: false, editing: null });
   };
 
-  const remove = (id: number) => {
-    setItems(prev => prev.filter(i => i.id !== id));
-    toast.success('Facility deleted');
+  const remove = async (id: number) => {
+    try {
+      facilityStorage.deleteFacility(id);
+      setItems(facilityStorage.getFacilities());
+      toast.success('Facility deleted');
+      
+      // Dispatch storage event to notify other components
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new StorageEvent('storage', {
+          key: 'facilities',
+          newValue: localStorage.getItem('facilities')
+        }));
+      }
+    } catch (error) {
+      console.error('Error deleting facility:', error);
+      toast.error('Failed to delete facility');
+    }
   };
 
   return (

@@ -1,4 +1,4 @@
-// File: C:\Users\Sammy\OneDrive\Desktop\karyon-sparkle\src\app\layout.tsx
+// File: C:\Users\Sammy\OneDrive\Desktop\al_mawa\karyon\karyan\src\app\layout.tsx
 import * as entry from '../../../src/app/layout.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { CheckCircle, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
-import { PageLayout } from '@/components/PageLayout';
+import PageLayout from '@/components/PageLayout';
 import { ScrollReveal } from '@/components/ScrollReveal';
 import { SectionHeading } from '@/components/SectionHeading';
 import { FloatingActions } from '@/components/FloatingActions';
