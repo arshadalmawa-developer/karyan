@@ -1,16 +1,33 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BookOpen, Clock, Users, X } from 'lucide-react';
 import PageLayout from '@/components/PageLayout';
 import { ScrollReveal } from '@/components/ScrollReveal';
 import { SectionHeading } from '@/components/SectionHeading';
 import { FloatingActions } from '@/components/FloatingActions';
-import { courses } from '@/data/mockData';
+import { courseStorage } from '@/utils/courseStorage';
 
 const CoursesPage = () => {
-  const [selected, setSelected] = useState<typeof courses[0] | null>(null);
+  const [courses, setCourses] = useState<any[]>([]);
+  const [selected, setSelected] = useState<any | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadCourses = async () => {
+      try {
+        const coursesData = await courseStorage.getCourses();
+        setCourses(coursesData);
+      } catch (error) {
+        console.error('Error loading courses:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadCourses();
+  }, []);
 
   return (
     <PageLayout>
@@ -18,8 +35,24 @@ const CoursesPage = () => {
         <div className="container mx-auto px-4">
           <SectionHeading title="Our Courses" subtitle="Comprehensive paramedical programs designed for successful healthcare careers" />
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {courses.map((course, i) => (
-              <ScrollReveal key={course.id} delay={i * 0.1}>
+            {loading ? (
+              // Loading state
+              Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="glass-panel rounded-2xl p-6 h-full">
+                  <div className="animate-pulse">
+                    <div className="w-12 h-12 rounded-xl bg-muted mb-4"></div>
+                    <div className="h-6 bg-muted rounded mb-2"></div>
+                    <div className="h-4 bg-muted rounded mb-4"></div>
+                    <div className="flex gap-4">
+                      <div className="h-4 bg-muted rounded w-16"></div>
+                      <div className="h-4 bg-muted rounded w-16"></div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : courses.length > 0 ? (
+              courses.map((course, i) => (
+              <ScrollReveal key={course._id} delay={i * 0.1}>
                 <motion.div
                   whileHover={{ scale: 1.04, y: -8 }}
                   whileTap={{ scale: 0.98 }}
@@ -38,7 +71,16 @@ const CoursesPage = () => {
                   </div>
                 </motion.div>
               </ScrollReveal>
-            ))}
+            ))) : (
+              // Empty state
+              <div className="col-span-full text-center py-12">
+                <div className="w-16 h-16 rounded-xl bg-muted/50 flex items-center justify-center mx-auto mb-4">
+                  <BookOpen size={24} className="text-muted-foreground" />
+                </div>
+                <h3 className="text-lg font-semibold mb-2">No Courses Available</h3>
+                <p className="text-muted-foreground">No courses have been added yet. Please check back later.</p>
+              </div>
+            )}
           </div>
         </div>
       </section>
