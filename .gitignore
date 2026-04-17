@@ -7,17 +7,75 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies
 node_modules
+.pnp
+.pnp.js
+
+# Production builds
 dist
 dist-ssr
-*.local
+build
+.next
+out
 
-# Editor directories and files
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Cache
+.cache
+.parcel-cache
+.eslintcache
+
+# Runtime data
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory
+coverage
+*.lcov
+.nyc_output
+
+# Local development
+*.local
 .vscode/*
 !.vscode/extensions.json
 .idea
 .DS_Store
 *.suo
+
+# OS generated files
+Thumbs.db
+Thumbs.db
+*.swp
+*.swo
+
+# Temporary files
+*.tmp
+*.temp
+.temp
+*.bak
+*.backup
+
+# Database
+*.sqlite
+*.db
+
+# Testing
+.jest
+coverage/
+
+# TypeScript
+*.tsbuildinfo
+
+# Next.js
+.next/
+out/
 *.ntvs*
 *.njsproj
 *.sln
