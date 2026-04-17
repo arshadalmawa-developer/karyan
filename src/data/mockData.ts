@@ -1,9 +1,9 @@
 export const collegeInfo = {
   name: "Karyon College Of Paramedical Science",
   established: 2020,
-  phone: "8460401798",
-  email: "info@karyoncollege.edu",
-  address: "Karyon College Campus, Main Road, Gujarat, India",
+  phone: "8989115868",
+  email: "karyoncwa07@gmail.com",
+  address: "Hill side homes, Khajri Ring road, Near new RTO office, Manegaon, Dungariya, Chhindwara, 480001",
   description: "Karyon College Of Paramedical Science provides excellent facilities. The college offers multiple labs, a well-equipped library, and advanced practical training rooms that create a highly supportive and effective learning environment for students.",
   mission: "To produce competent paramedical professionals through quality education, hands-on training, and ethical values that contribute to the healthcare sector.",
   vision: "To be a leading institution in paramedical education, recognized for academic excellence, innovative research, and community health services.",
@@ -16,16 +16,7 @@ export const stats = [
   { label: "Courses Offered", value: 8, suffix: "" },
 ];
 
-export const courses = [
-  { id: 1, name: "B.Sc. Medical Laboratory Technology", duration: "3 Years", seats: 60, description: "Comprehensive training in clinical laboratory procedures, hematology, biochemistry, microbiology, and pathology.", icon: "FlaskConical" },
-  { id: 2, name: "B.Sc. Radiology & Imaging Technology", duration: "3 Years", seats: 40, description: "Advanced imaging techniques including X-ray, CT scan, MRI, and ultrasound technology.", icon: "ScanLine" },
-  { id: 3, name: "B.Sc. Operation Theatre Technology", duration: "3 Years", seats: 40, description: "Training in surgical assistance, anesthesia technology, and operation theatre management.", icon: "HeartPulse" },
-  { id: 4, name: "B.Sc. Optometry", duration: "4 Years", seats: 30, description: "Eye care science including vision testing, contact lens fitting, and ocular disease detection.", icon: "Eye" },
-  { id: 5, name: "B.Sc. Dialysis Technology", duration: "3 Years", seats: 30, description: "Specialized training in renal dialysis procedures and kidney care management.", icon: "Activity" },
-  { id: 6, name: "Diploma in Medical Laboratory Technology", duration: "2 Years", seats: 60, description: "Foundation course in clinical lab techniques and diagnostic procedures.", icon: "Microscope" },
-  { id: 7, name: "Diploma in Radiology Technology", duration: "2 Years", seats: 40, description: "Practical training in radiographic imaging and radiation safety.", icon: "Radiation" },
-  { id: 8, name: "B.Sc. Cardiac Care Technology", duration: "3 Years", seats: 30, description: "Training in cardiac diagnostic procedures, ECG, echocardiography, and cardiac catheterization.", icon: "Heart" },
-];
+export const courses = [];
 
 export const facilities = [
   { id: 1, title: "Advanced Laboratories", description: "12 state-of-the-art laboratories equipped with modern diagnostic instruments and research equipment.", image: "lab", icon: "FlaskConical" },

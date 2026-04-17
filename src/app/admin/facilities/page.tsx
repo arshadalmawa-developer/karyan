@@ -10,75 +10,68 @@ import { toast } from 'sonner';
 const AdminFacilities = () => {
   const [items, setItems] = useState<any[]>([]);
   const [modal, setModal] = useState<{ open: boolean; editing: any | null }>({ open: false, editing: null });
-  const [form, setForm] = useState({ title: '', description: '' });
+  const [form, setForm] = useState({ name: '', description: '', image: '', icon: 'GraduationCap' });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Load facilities from storage
-    if (typeof window !== 'undefined') {
-      setItems(facilityStorage.getFacilities());
-    }
-  }, []);
-
-  useEffect(() => {
-    // Listen for storage changes to refresh facilities
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'facilities') {
-        setItems(facilityStorage.getFacilities());
+    // Load facilities from MongoDB
+    const loadFacilities = async () => {
+      try {
+        const facilities = await facilityStorage.getFacilities();
+        setItems(facilities);
+      } catch (error) {
+        console.error('Error loading facilities:', error);
+        setItems([]);
+      } finally {
+        setLoading(false);
       }
     };
-
-    if (typeof window !== 'undefined') {
-      window.addEventListener('storage', handleStorageChange);
-      return () => window.removeEventListener('storage', handleStorageChange);
-    }
+    
+    loadFacilities();
   }, []);
 
   const openEdit = (f: any) => {
-    setForm({ title: f.title, description: f.description });
+    setForm({ 
+      name: f.name, 
+      description: f.description, 
+      image: f.image || '', 
+      icon: f.icon || 'GraduationCap' 
+    });
     setModal({ open: true, editing: f });
   };
 
   const save = async () => {
     try {
       if (modal.editing) {
-        facilityStorage.updateFacility(modal.editing.id, form);
-        setItems(prev => prev.map(i => i.id === modal.editing!.id ? { ...i, ...form } : i));
+        await facilityStorage.updateFacility(modal.editing._id, form);
+        const facilities = await facilityStorage.getFacilities();
+        setItems(facilities);
         toast.success('Facility updated');
       } else {
-        facilityStorage.addFacility(form);
-        setItems(facilityStorage.getFacilities());
+        await facilityStorage.addFacility({ 
+          ...form, 
+          isActive: true, 
+          addedDate: new Date().toISOString() 
+        });
+        const facilities = await facilityStorage.getFacilities();
+        setItems(facilities);
         toast.success('Facility added');
       }
       
-      // Dispatch storage event to notify other components
-      if (typeof window !== 'undefined') {
-        window.dispatchEvent(new StorageEvent('storage', {
-          key: 'facilities',
-          newValue: localStorage.getItem('facilities')
-        }));
-      }
-      
       setModal({ open: false, editing: null });
-      setForm({ title: '', description: '' });
+      setForm({ name: '', description: '', image: '', icon: 'GraduationCap' });
     } catch (error) {
       console.error('Error saving facility:', error);
       toast.error('Failed to save facility');
     }
   };
 
-  const remove = async (id: number) => {
+  const remove = async (id: string) => {
     try {
-      facilityStorage.deleteFacility(id);
-      setItems(facilityStorage.getFacilities());
+      await facilityStorage.deleteFacility(id);
+      const facilities = await facilityStorage.getFacilities();
+      setItems(facilities);
       toast.success('Facility deleted');
-      
-      // Dispatch storage event to notify other components
-      if (typeof window !== 'undefined') {
-        window.dispatchEvent(new StorageEvent('storage', {
-          key: 'facilities',
-          newValue: localStorage.getItem('facilities')
-        }));
-      }
     } catch (error) {
       console.error('Error deleting facility:', error);
       toast.error('Failed to delete facility');
@@ -89,23 +82,23 @@ const AdminFacilities = () => {
     <AdminLayout>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-display font-bold gradient-text">Manage Facilities</h1>
-        <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => { setForm({ title: '', description: '' }); setModal({ open: true, editing: null }); }} className="gradient-primary-bg text-primary-foreground px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2">
+        <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => { setForm({ name: '', description: '', image: '', icon: 'GraduationCap' }); setModal({ open: true, editing: null }); }} className="gradient-primary-bg text-primary-foreground px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2">
           <Plus size={16} /> Add Facility
         </motion.button>
       </div>
 
       <div className="grid md:grid-cols-2 gap-4">
         {items.map((f, i) => (
-          <motion.div key={f.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="glass-panel rounded-2xl p-5 flex justify-between items-start">
+          <motion.div key={f._id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="glass-panel rounded-2xl p-5 flex justify-between items-start">
             <div>
-              <h3 className="font-display font-bold">{f.title}</h3>
+              <h3 className="font-display font-bold">{f.name}</h3>
               <p className="text-sm text-muted-foreground mt-1">{f.description}</p>
             </div>
             <div className="flex gap-2">
               <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} onClick={() => openEdit(f)} className="p-2 rounded-lg hover:bg-muted transition-colors">
                 <Edit size={16} />
               </motion.button>
-              <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} onClick={() => remove(f.id)} className="p-2 rounded-lg hover:bg-destructive/10 text-destructive transition-colors">
+              <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} onClick={() => remove(f._id)} className="p-2 rounded-lg hover:bg-destructive/10 text-destructive transition-colors">
                 <Trash2 size={16} />
               </motion.button>
             </div>
@@ -125,7 +118,7 @@ const AdminFacilities = () => {
                 </button>
               </div>
               <div className="space-y-4">
-                <input placeholder="Facility Title" value={form.title} onChange={e => setForm(prev => ({ ...prev, title: e.target.value }))} className="w-full px-4 py-3 rounded-xl bg-muted border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors" />
+                <input placeholder="Facility Name" value={form.name} onChange={e => setForm(prev => ({ ...prev, name: e.target.value }))} className="w-full px-4 py-3 rounded-xl bg-muted border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors" />
                 <textarea placeholder="Description" rows={3} value={form.description} onChange={e => setForm(prev => ({ ...prev, description: e.target.value }))} className="w-full px-4 py-3 rounded-xl bg-muted border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors resize-none" />
                 <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={save} className="w-full gradient-primary-bg text-primary-foreground py-3 rounded-xl font-semibold">
                   {modal.editing ? 'Update' : 'Add'} Facility

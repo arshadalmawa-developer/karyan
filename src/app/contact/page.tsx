@@ -7,6 +7,7 @@ import PageLayout from '@/components/PageLayout';
 import { ScrollReveal } from '@/components/ScrollReveal';
 import { SectionHeading } from '@/components/SectionHeading';
 import { FloatingActions } from '@/components/FloatingActions';
+import MapSection from '@/components/MapSection';
 import { collegeInfo } from '@/data/mockData';
 import { toast } from 'sonner';
 
@@ -21,7 +22,7 @@ const ContactPage = () => {
 
   return (
     <PageLayout>
-      <section className="py-20 mesh-bg">
+      <section className="py-12 mesh-bg">
         <div className="container mx-auto px-4">
           <SectionHeading title="Contact Us" subtitle="Get in touch with us for any queries or information" />
 
@@ -49,16 +50,6 @@ const ContactPage = () => {
                   </motion.div>
                 </ScrollReveal>
               ))}
-
-              {/* Map Placeholder */}
-              <ScrollReveal delay={0.3} direction="left">
-                <div className="glass-panel rounded-2xl p-2 aspect-video flex items-center justify-center bg-gradient-to-br from-primary/10 to-secondary/10">
-                  <div className="text-center">
-                    <MapPin size={40} className="text-primary mx-auto mb-2" />
-                    <p className="text-sm text-muted-foreground">Google Map Placeholder</p>
-                  </div>
-                </div>
-              </ScrollReveal>
             </div>
 
             {/* Form */}
@@ -77,17 +68,17 @@ const ContactPage = () => {
                       placeholder={f.placeholder}
                       required={f.required}
                       value={form[f.name as keyof typeof form]}
-                      onChange={e => setForm(prev => ({ ...prev, [f.name]: e.target.value }))}
-                      className="w-full px-4 py-3 rounded-xl bg-muted border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors text-sm"
+                      onChange={(e) => setForm(prev => ({ ...prev, [f.name]: e.target.value }))}
+                      className="w-full px-4 py-3 rounded-xl bg-muted border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors"
                     />
                   ))}
                   <textarea
                     placeholder="Your Message"
-                    required
                     rows={4}
+                    required
                     value={form.message}
-                    onChange={e => setForm(prev => ({ ...prev, message: e.target.value }))}
-                    className="w-full px-4 py-3 rounded-xl bg-muted border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors text-sm resize-none"
+                    onChange={(e) => setForm(prev => ({ ...prev, message: e.target.value }))}
+                    className="w-full px-4 py-3 rounded-xl bg-muted border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors resize-none"
                   />
                   <motion.button
                     whileHover={{ scale: 1.02 }}
@@ -103,6 +94,21 @@ const ContactPage = () => {
           </div>
         </div>
       </section>
+
+      {/* Google Maps Section */}
+      <section className="py-1 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <ScrollReveal delay={0.3} direction="up">
+            <MapSection 
+              location="KARYON GROUP OF INSTITUTION, Chandan Nagar, Pune, Maharashtra"
+              coordinates="22.0621138,78.9374201"
+              height="h-96"
+              className="max-w-4xl mx-auto"
+            />
+          </ScrollReveal>
+        </div>
+      </section>
+
       <FloatingActions />
     </PageLayout>
   );

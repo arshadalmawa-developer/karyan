@@ -19,24 +19,18 @@ const FacilitiesPage = () => {
   const [modal, setModal] = useState(false);
 
   useEffect(() => {
-    // Load facilities from storage
-    if (typeof window !== 'undefined') {
-      setFacilitiesData(facilityStorage.getFacilities());
-    }
-  }, []);
-
-  useEffect(() => {
-    // Listen for storage changes to refresh facilities
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'facilities') {
-        setFacilitiesData(facilityStorage.getFacilities());
+    // Load facilities from MongoDB
+    const loadFacilities = async () => {
+      try {
+        const facilities = await facilityStorage.getFacilities();
+        setFacilitiesData(facilities);
+      } catch (error) {
+        console.error('Error loading facilities:', error);
+        setFacilitiesData([]);
       }
     };
-
-    if (typeof window !== 'undefined') {
-      window.addEventListener('storage', handleStorageChange);
-      return () => window.removeEventListener('storage', handleStorageChange);
-    }
+    
+    loadFacilities();
   }, []);
 
   const viewFacility = (facility: any) => {

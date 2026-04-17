@@ -10,28 +10,45 @@ import { ScrollReveal } from '@/components/ScrollReveal';
 import { SectionHeading } from '@/components/SectionHeading';
 import { LoadingScreen } from '@/components/LoadingScreen';
 import { FloatingActions } from '@/components/FloatingActions';
-import { stats, courses, facilities, testimonials, collegeInfo } from '@/data/mockData';
+import { stats, facilities, testimonials, collegeInfo } from '@/data/mockData';
+import { courseStorage } from '@/utils/courseStorage';
 import { enquiryStorage } from '@/utils/enquiryStorage';
 import { facilityStorage } from '@/utils/facilityStorage';
 import heroBg from '@/assets/hero-bg.jpg';
 
-// Define course categories
-const courseCategories = [
-  {
-    id: 'bachelors',
-    name: "Bachelor's Programs",
-    description: "Comprehensive 3-4 year degree programs",
-    icon: "GraduationCap",
-    courses: courses.filter(course => course.name.startsWith('B.Sc.')).slice(0, 4)
-  },
-  {
-    id: 'diplomas',
-    name: "Diploma Programs", 
-    description: "Focused 2-year skill-based programs",
-    icon: "Award",
-    courses: courses.filter(course => course.name.startsWith('Diploma')).slice(0, 4)
-  }
-];
+// Helper function to organize courses into categories
+const organizeCourses = (courses: any[]) => {
+  const bscCourses = courses.filter(course => course.name.includes('B.Sc.') || course.name.includes('BSC')).slice(0, 4);
+  const bcomCourses = courses.filter(course => course.name.includes('B.Com.') || course.name.includes('BCOM')).slice(0, 3);
+  const upcomingCourses = courses.filter(course => 
+    !course.name.includes('B.Sc.') && !course.name.includes('BSC') && 
+    !course.name.includes('B.Com.') && !course.name.includes('BCOM')
+  ).slice(0, 3);
+
+  return [
+    {
+      id: 'bsc',
+      name: "B.Sc. Programs",
+      description: "Comprehensive science and healthcare programs",
+      icon: "GraduationCap",
+      courses: bscCourses
+    },
+    {
+      id: 'bcom',
+      name: "B.Com. Programs", 
+      description: "Commerce and business management programs",
+      icon: "Briefcase",
+      courses: bcomCourses
+    },
+    {
+      id: 'upcoming',
+      name: "Upcoming Programs",
+      description: "Future programs launching soon",
+      icon: "TrendingUp",
+      courses: upcomingCourses
+    }
+  ];
+};
 
 const HomePage = () => {
   const [loading, setLoading] = useState(true);
@@ -41,6 +58,7 @@ const HomePage = () => {
   const [facilitiesData, setFacilitiesData] = useState<any[]>([]);
   const [selectedFacility, setSelectedFacility] = useState<any | null>(null);
   const [facilityModal, setFacilityModal] = useState(false);
+  const [coursesData, setCoursesData] = useState<any[]>([]);
   const heroRef = useRef(null);
 
   useEffect(() => {
@@ -51,6 +69,21 @@ const HomePage = () => {
       setLoading(false);
     }
   }, []);
+
+  useEffect(() => {
+    const loadCourses = async () => {
+      try {
+        const coursesData = await courseStorage.getCourses();
+        setCoursesData(coursesData);
+      } catch (error) {
+        console.error('Error loading courses:', error);
+      }
+    };
+    
+    if (mounted) {
+      loadCourses();
+    }
+  }, [mounted]);
 
   useEffect(() => {
     // Show popup after a short delay if not already shown
@@ -65,45 +98,28 @@ const HomePage = () => {
   }, [mounted, loading]);
 
   useEffect(() => {
-    // Load facilities from storage
-    if (typeof window !== 'undefined') {
-      setFacilitiesData(facilityStorage.getFacilities());
-    }
-  }, []);
-
-  useEffect(() => {
-    // Listen for storage changes to refresh facilities
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'facilities') {
-        setFacilitiesData(facilityStorage.getFacilities());
+    // Load facilities from MongoDB
+    const loadFacilities = async () => {
+      try {
+        const facilities = await facilityStorage.getFacilities();
+        setFacilitiesData(facilities);
+      } catch (error) {
+        console.error('Error loading facilities:', error);
+        setFacilitiesData([]);
       }
     };
-
-    if (typeof window !== 'undefined') {
-      window.addEventListener('storage', handleStorageChange);
-      return () => window.removeEventListener('storage', handleStorageChange);
+    
+    if (mounted) {
+      loadFacilities();
     }
-  }, []);
+  }, [mounted]);
 
   const viewFacility = (facility: any) => {
     setSelectedFacility(facility);
     setFacilityModal(true);
   };
 
-  useEffect(() => {
-    // Listen for storage changes to refresh facilities
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'facilities') {
-        setFacilitiesData(facilityStorage.getFacilities());
-      }
-    };
-
-    if (typeof window !== 'undefined') {
-      window.addEventListener('storage', handleStorageChange);
-      return () => window.removeEventListener('storage', handleStorageChange);
-    }
-  }, []);
-
+  
   const handleFinish = useCallback(() => {
     setLoading(false);
     if (typeof window !== 'undefined') {
@@ -252,7 +268,7 @@ const HomePage = () => {
         <div className="container mx-auto px-4">
           <SectionHeading title="Our Courses" subtitle="Explore our comprehensive range of paramedical programs" />
           <div className="grid md:grid-cols-2 gap-6">
-            {courseCategories.map((category, i) => (
+            {organizeCourses(coursesData).map((category, i) => (
               <ScrollReveal key={category.id} delay={i * 0.1}>
                 <Link href="/courses">
                   <motion.div

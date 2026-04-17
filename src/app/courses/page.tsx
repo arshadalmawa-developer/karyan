@@ -14,6 +14,20 @@ const CoursesPage = () => {
   const [selected, setSelected] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Helper function to organize courses into categories
+  const organizeCourses = () => {
+    const bscCourses = courses.filter(course => course.name.includes('B.Sc.') || course.name.includes('BSC'));
+    const bcomCourses = courses.filter(course => course.name.includes('B.Com.') || course.name.includes('BCOM'));
+    const upcomingCourses = courses.filter(course => 
+      !course.name.includes('B.Sc.') && !course.name.includes('BSC') && 
+      !course.name.includes('B.Com.') && !course.name.includes('BCOM')
+    );
+
+    return { bscCourses, bcomCourses, upcomingCourses };
+  };
+
+  const { bscCourses, bcomCourses, upcomingCourses } = organizeCourses();
+
   useEffect(() => {
     const loadCourses = async () => {
       try {
@@ -34,10 +48,9 @@ const CoursesPage = () => {
       <section className="py-20 mesh-bg">
         <div className="container mx-auto px-4">
           <SectionHeading title="Our Courses" subtitle="Comprehensive paramedical programs designed for successful healthcare careers" />
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {loading ? (
-              // Loading state
-              Array.from({ length: 6 }).map((_, i) => (
+          {loading ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className="glass-panel rounded-2xl p-6 h-full">
                   <div className="animate-pulse">
                     <div className="w-12 h-12 rounded-xl bg-muted mb-4"></div>
@@ -49,39 +62,121 @@ const CoursesPage = () => {
                     </div>
                   </div>
                 </div>
-              ))
-            ) : courses.length > 0 ? (
-              courses.map((course, i) => (
-              <ScrollReveal key={course._id} delay={i * 0.1}>
-                <motion.div
-                  whileHover={{ scale: 1.04, y: -8 }}
-                  whileTap={{ scale: 0.98 }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                  onClick={() => setSelected(course)}
-                  className="glass-panel rounded-2xl p-6 cursor-pointer group h-full"
-                >
-                  <div className="w-12 h-12 rounded-xl gradient-primary-bg flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-3 transition-transform">
-                    <BookOpen size={22} className="text-primary-foreground" />
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-16">
+              {/* BSC Section */}
+              {bscCourses.length > 0 && (
+                <ScrollReveal direction="up">
+                  <div>
+                    <h2 className="text-2xl font-display font-bold mb-6 gradient-text">B.Sc. Programs</h2>
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {bscCourses.map((course, i) => (
+                        <ScrollReveal key={course._id} delay={i * 0.1}>
+                          <motion.div
+                            whileHover={{ scale: 1.04, y: -8 }}
+                            whileTap={{ scale: 0.98 }}
+                            transition={{ type: "spring", stiffness: 300 }}
+                            onClick={() => setSelected(course)}
+                            className="glass-panel rounded-2xl p-6 cursor-pointer group h-full"
+                          >
+                            <div className="w-12 h-12 rounded-xl gradient-primary-bg flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-3 transition-transform">
+                              <BookOpen size={22} className="text-primary-foreground" />
+                            </div>
+                            <h3 className="font-display font-bold text-lg mb-2 group-hover:text-primary transition-colors">{course.name}</h3>
+                            <p className="text-sm text-muted-foreground mb-4">{course.description}</p>
+                            <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                              <span className="flex items-center gap-1"><Clock size={12} />{course.duration}</span>
+                              <span className="flex items-center gap-1"><Users size={12} />{course.seats} Seats</span>
+                            </div>
+                          </motion.div>
+                        </ScrollReveal>
+                      ))}
+                    </div>
                   </div>
-                  <h3 className="font-display font-bold text-lg mb-2 group-hover:text-primary transition-colors">{course.name}</h3>
-                  <p className="text-sm text-muted-foreground mb-4">{course.description}</p>
-                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                    <span className="flex items-center gap-1"><Clock size={12} />{course.duration}</span>
-                    <span className="flex items-center gap-1"><Users size={12} />{course.seats} Seats</span>
+                </ScrollReveal>
+              )}
+
+              {/* BCOM Section */}
+              {bcomCourses.length > 0 && (
+                <ScrollReveal direction="up">
+                  <div>
+                    <h2 className="text-2xl font-display font-bold mb-6 gradient-text">B.Com. Programs</h2>
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {bcomCourses.map((course, i) => (
+                        <ScrollReveal key={course._id} delay={i * 0.1}>
+                          <motion.div
+                            whileHover={{ scale: 1.04, y: -8 }}
+                            whileTap={{ scale: 0.98 }}
+                            transition={{ type: "spring", stiffness: 300 }}
+                            onClick={() => setSelected(course)}
+                            className="glass-panel rounded-2xl p-6 cursor-pointer group h-full"
+                          >
+                            <div className="w-12 h-12 rounded-xl gradient-primary-bg flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-3 transition-transform">
+                              <BookOpen size={22} className="text-primary-foreground" />
+                            </div>
+                            <h3 className="font-display font-bold text-lg mb-2 group-hover:text-primary transition-colors">{course.name}</h3>
+                            <p className="text-sm text-muted-foreground mb-4">{course.description}</p>
+                            <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                              <span className="flex items-center gap-1"><Clock size={12} />{course.duration}</span>
+                              <span className="flex items-center gap-1"><Users size={12} />{course.seats} Seats</span>
+                            </div>
+                          </motion.div>
+                        </ScrollReveal>
+                      ))}
+                    </div>
                   </div>
-                </motion.div>
-              </ScrollReveal>
-            ))) : (
-              // Empty state
-              <div className="col-span-full text-center py-12">
-                <div className="w-16 h-16 rounded-xl bg-muted/50 flex items-center justify-center mx-auto mb-4">
-                  <BookOpen size={24} className="text-muted-foreground" />
+                </ScrollReveal>
+              )}
+
+              {/* UpComing Section */}
+              {upcomingCourses.length > 0 && (
+                <ScrollReveal direction="up">
+                  <div>
+                    <h2 className="text-2xl font-display font-bold mb-6 gradient-text">Upcoming Programs</h2>
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {upcomingCourses.map((course, i) => (
+                        <ScrollReveal key={course._id} delay={i * 0.1}>
+                          <motion.div
+                            whileHover={{ scale: 1.04, y: -8 }}
+                            whileTap={{ scale: 0.98 }}
+                            transition={{ type: "spring", stiffness: 300 }}
+                            onClick={() => setSelected(course)}
+                            className="glass-panel rounded-2xl p-6 cursor-pointer group h-full border-2 border-primary/20"
+                          >
+                            <div className="w-12 h-12 rounded-xl gradient-primary-bg flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-3 transition-transform">
+                              <BookOpen size={22} className="text-primary-foreground" />
+                            </div>
+                            <div className="absolute top-4 right-4">
+                              <span className="px-2 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full">Coming Soon</span>
+                            </div>
+                            <h3 className="font-display font-bold text-lg mb-2 group-hover:text-primary transition-colors">{course.name}</h3>
+                            <p className="text-sm text-muted-foreground mb-4">{course.description}</p>
+                            <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                              <span className="flex items-center gap-1"><Clock size={12} />{course.duration}</span>
+                              <span className="flex items-center gap-1"><Users size={12} />{course.seats} Seats</span>
+                            </div>
+                          </motion.div>
+                        </ScrollReveal>
+                      ))}
+                    </div>
+                  </div>
+                </ScrollReveal>
+              )}
+
+              {/* Empty State */}
+              {bscCourses.length === 0 && bcomCourses.length === 0 && upcomingCourses.length === 0 && (
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 rounded-xl bg-muted/50 flex items-center justify-center mx-auto mb-4">
+                    <BookOpen size={24} className="text-muted-foreground" />
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2">No Courses Available</h3>
+                  <p className="text-muted-foreground">No courses have been added yet. Please check back later.</p>
                 </div>
-                <h3 className="text-lg font-semibold mb-2">No Courses Available</h3>
-                <p className="text-muted-foreground">No courses have been added yet. Please check back later.</p>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          )}
         </div>
       </section>
 
