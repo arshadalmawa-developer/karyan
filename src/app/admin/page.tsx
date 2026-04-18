@@ -47,12 +47,10 @@ const AdminDashboard = () => {
   }, []);
 
   const dashCards = [
-    { label: 'Total Students', value: '500+', icon: Users, change: '+12%' },
     { label: 'Courses', value: courses.length.toString(), icon: BookOpen, change: '+2' },
     { label: 'Facilities', value: facilities.length.toString(), icon: Building2, change: '' },
     { label: 'Testimonials', value: testimonials.length.toString(), icon: GraduationCap, change: '+1' },
     { label: 'Enquiries', value: enquiries?.length?.toString() || '0', icon: MessageSquare, change: '+5' },
-    { label: 'Growth', value: '24%', icon: TrendingUp, change: '+3%' },
   ];
 
   // Show loading state while checking authentication

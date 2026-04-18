@@ -16,17 +16,20 @@ const CoursesPage = () => {
 
   // Helper function to organize courses into categories
   const organizeCourses = () => {
-    const bscCourses = courses.filter(course => course.name.includes('B.Sc.') || course.name.includes('BSC'));
-    const bcomCourses = courses.filter(course => course.name.includes('B.Com.') || course.name.includes('BCOM'));
-    const upcomingCourses = courses.filter(course => 
+    const bscCourses = courses.filter(course => course.category === 'BSC' || course.name.includes('B.Sc.') || course.name.includes('BSC')).slice(0, 4);
+    const bcomCourses = courses.filter(course => course.category === 'BCOM' || course.name.includes('B.Com.') || course.name.includes('BCOM')).slice(0, 3);
+    const bmltCourses = courses.filter(course => course.category === 'BMLT' || course.name.includes('BMLT')).slice(0, 3);
+    const dmltCourses = courses.filter(course => course.category === 'DMLT' || course.name.includes('DMLT')).slice(0, 3);
+    const upcomingCourses = courses.filter(course => course.category === 'Upcoming' || (
       !course.name.includes('B.Sc.') && !course.name.includes('BSC') && 
-      !course.name.includes('B.Com.') && !course.name.includes('BCOM')
-    );
+      !course.name.includes('B.Com.') && !course.name.includes('BCOM') &&
+      !course.name.includes('BMLT') && !course.name.includes('DMLT')
+    )).slice(0, 3);
 
-    return { bscCourses, bcomCourses, upcomingCourses };
+    return { bscCourses, bcomCourses, bmltCourses, dmltCourses, upcomingCourses };
   };
 
-  const { bscCourses, bcomCourses, upcomingCourses } = organizeCourses();
+  const { bscCourses, bcomCourses, bmltCourses, dmltCourses, upcomingCourses } = organizeCourses();
 
   useEffect(() => {
     const loadCourses = async () => {
@@ -89,6 +92,15 @@ const CoursesPage = () => {
                             <div className="flex items-center gap-4 text-xs text-muted-foreground">
                               <span className="flex items-center gap-1"><Clock size={12} />{course.duration}</span>
                               <span className="flex items-center gap-1"><Users size={12} />{course.seats} Seats</span>
+                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                course.category === 'BSC' ? 'bg-blue-100 text-blue-800' :
+                                course.category === 'BCOM' ? 'bg-green-100 text-green-800' :
+                                course.category === 'BMLT' ? 'bg-purple-100 text-purple-800' :
+                                course.category === 'DMLT' ? 'bg-orange-100 text-orange-800' :
+                                'bg-gray-100 text-gray-800'
+                              }`}>
+                                {course.category}
+                              </span>
                             </div>
                           </motion.div>
                         </ScrollReveal>
@@ -102,7 +114,7 @@ const CoursesPage = () => {
               {bcomCourses.length > 0 && (
                 <ScrollReveal direction="up">
                   <div>
-                    <h2 className="text-2xl font-display font-bold mb-6 gradient-text">B.Com. Programs</h2>
+                    <h2 className="text-2xl font-display font-bold mb-6 gradient-text">BCOM Programs</h2>
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                       {bcomCourses.map((course, i) => (
                         <ScrollReveal key={course._id} delay={i * 0.1}>
@@ -121,6 +133,97 @@ const CoursesPage = () => {
                             <div className="flex items-center gap-4 text-xs text-muted-foreground">
                               <span className="flex items-center gap-1"><Clock size={12} />{course.duration}</span>
                               <span className="flex items-center gap-1"><Users size={12} />{course.seats} Seats</span>
+                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                course.category === 'BSC' ? 'bg-blue-100 text-blue-800' :
+                                course.category === 'BCOM' ? 'bg-green-100 text-green-800' :
+                                course.category === 'BMLT' ? 'bg-purple-100 text-purple-800' :
+                                course.category === 'DMLT' ? 'bg-orange-100 text-orange-800' :
+                                'bg-gray-100 text-gray-800'
+                              }`}>
+                                {course.category}
+                              </span>
+                            </div>
+                          </motion.div>
+                        </ScrollReveal>
+                      ))}
+                    </div>
+                  </div>
+                </ScrollReveal>
+              )}
+
+              {/* BMLT Section */}
+              {bmltCourses.length > 0 && (
+                <ScrollReveal direction="up">
+                  <div>
+                    <h2 className="text-2xl font-display font-bold mb-6 gradient-text">BMLT Programs</h2>
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {bmltCourses.map((course, i) => (
+                        <ScrollReveal key={course._id} delay={i * 0.1}>
+                          <motion.div
+                            whileHover={{ scale: 1.04, y: -8 }}
+                            whileTap={{ scale: 0.98 }}
+                            transition={{ type: "spring", stiffness: 300 }}
+                            onClick={() => setSelected(course)}
+                            className="glass-panel rounded-2xl p-6 cursor-pointer group h-full"
+                          >
+                            <div className="w-12 h-12 rounded-xl gradient-primary-bg flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-3 transition-transform">
+                              <BookOpen size={22} className="text-primary-foreground" />
+                            </div>
+                            <h3 className="font-display font-bold text-lg mb-2 group-hover:text-primary transition-colors">{course.name}</h3>
+                            <p className="text-sm text-muted-foreground mb-4">{course.description}</p>
+                            <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                              <span className="flex items-center gap-1"><Clock size={12} />{course.duration}</span>
+                              <span className="flex items-center gap-1"><Users size={12} />{course.seats} Seats</span>
+                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                course.category === 'BSC' ? 'bg-blue-100 text-blue-800' :
+                                course.category === 'BCOM' ? 'bg-green-100 text-green-800' :
+                                course.category === 'BMLT' ? 'bg-purple-100 text-purple-800' :
+                                course.category === 'DMLT' ? 'bg-orange-100 text-orange-800' :
+                                'bg-gray-100 text-gray-800'
+                              }`}>
+                                {course.category}
+                              </span>
+                            </div>
+                          </motion.div>
+                        </ScrollReveal>
+                      ))}
+                    </div>
+                  </div>
+                </ScrollReveal>
+              )}
+
+              {/* DMLT Section */}
+              {dmltCourses.length > 0 && (
+                <ScrollReveal direction="up">
+                  <div>
+                    <h2 className="text-2xl font-display font-bold mb-6 gradient-text">DMLT Programs</h2>
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {dmltCourses.map((course, i) => (
+                        <ScrollReveal key={course._id} delay={i * 0.1}>
+                          <motion.div
+                            whileHover={{ scale: 1.04, y: -8 }}
+                            whileTap={{ scale: 0.98 }}
+                            transition={{ type: "spring", stiffness: 300 }}
+                            onClick={() => setSelected(course)}
+                            className="glass-panel rounded-2xl p-6 cursor-pointer group h-full"
+                          >
+                            <div className="w-12 h-12 rounded-xl gradient-primary-bg flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-3 transition-transform">
+                              <BookOpen size={22} className="text-primary-foreground" />
+                            </div>
+                            <h3 className="font-display font-bold text-lg mb-2 group-hover:text-primary transition-colors">{course.name}</h3>
+                            <p className="text-sm text-muted-foreground mb-4">{course.description}</p>
+                            <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                              <span className="flex items-center gap-1"><Clock size={12} />{course.duration}</span>
+                              <span className="flex items-center gap-1"><Users size={12} />{course.seats} Seats</span>
+                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                course.category === 'BSC' ? 'bg-blue-100 text-blue-800' :
+                                course.category === 'BCOM' ? 'bg-green-100 text-green-800' :
+                                course.category === 'BMLT' ? 'bg-purple-100 text-purple-800' :
+                                course.category === 'DMLT' ? 'bg-orange-100 text-orange-800' :
+                                'bg-gray-100 text-gray-800'
+                              }`}>
+                                {course.category}
+                              </span>
                             </div>
                           </motion.div>
                         </ScrollReveal>
@@ -156,6 +259,15 @@ const CoursesPage = () => {
                             <div className="flex items-center gap-4 text-xs text-muted-foreground">
                               <span className="flex items-center gap-1"><Clock size={12} />{course.duration}</span>
                               <span className="flex items-center gap-1"><Users size={12} />{course.seats} Seats</span>
+                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                course.category === 'BSC' ? 'bg-blue-100 text-blue-800' :
+                                course.category === 'BCOM' ? 'bg-green-100 text-green-800' :
+                                course.category === 'BMLT' ? 'bg-purple-100 text-purple-800' :
+                                course.category === 'DMLT' ? 'bg-orange-100 text-orange-800' :
+                                'bg-gray-100 text-gray-800'
+                              }`}>
+                                {course.category}
+                              </span>
                             </div>
                           </motion.div>
                         </ScrollReveal>
@@ -166,7 +278,7 @@ const CoursesPage = () => {
               )}
 
               {/* Empty State */}
-              {bscCourses.length === 0 && bcomCourses.length === 0 && upcomingCourses.length === 0 && (
+              {bscCourses.length === 0 && bcomCourses.length === 0 && bmltCourses.length === 0 && dmltCourses.length === 0 && upcomingCourses.length === 0 && (
                 <div className="text-center py-12">
                   <div className="w-16 h-16 rounded-xl bg-muted/50 flex items-center justify-center mx-auto mb-4">
                     <BookOpen size={24} className="text-muted-foreground" />

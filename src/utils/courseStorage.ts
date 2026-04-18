@@ -9,7 +9,7 @@ interface Course {
   addedDate?: string;
   createdAt?: string;
   updatedAt?: string;
-  category: 'B.SC' | 'B.COM';
+  category: 'BSC' | 'BCOM' | 'BMLT' | 'DMLT' | 'Upcoming';
 }
 
 class CourseStorage {

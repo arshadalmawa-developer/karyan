@@ -18,27 +18,40 @@ import heroBg from '@/assets/hero-bg.jpg';
 
 // Helper function to organize courses into categories
 const organizeCourses = (courses: any[]) => {
-  const bscCourses = courses.filter(course => course.name.includes('B.Sc.') || course.name.includes('BSC')).slice(0, 4);
-  const bcomCourses = courses.filter(course => course.name.includes('B.Com.') || course.name.includes('BCOM')).slice(0, 3);
-  const upcomingCourses = courses.filter(course => 
-    !course.name.includes('B.Sc.') && !course.name.includes('BSC') && 
-    !course.name.includes('B.Com.') && !course.name.includes('BCOM')
-  ).slice(0, 3);
+  const bscCourses = courses.filter(course => course.category === 'BSC').slice(0, 4);
+  const bcomCourses = courses.filter(course => course.category === 'BCOM').slice(0, 3);
+  const bmltCourses = courses.filter(course => course.category === 'BMLT').slice(0, 3);
+  const dmltCourses = courses.filter(course => course.category === 'DMLT').slice(0, 3);
+  const upcomingCourses = courses.filter(course => course.category === 'Upcoming').slice(0, 3);
 
   return [
     {
       id: 'bsc',
-      name: "B.Sc. Programs",
-      description: "Comprehensive science and healthcare programs",
+      name: "BSC Programs",
+      description: "Bachelor of Science programs",
       icon: "GraduationCap",
       courses: bscCourses
     },
     {
       id: 'bcom',
-      name: "B.Com. Programs", 
-      description: "Commerce and business management programs",
+      name: "BCOM Programs", 
+      description: "Bachelor of Commerce programs",
       icon: "Briefcase",
       courses: bcomCourses
+    },
+    {
+      id: 'bmlt',
+      name: "BMLT Programs",
+      description: "Bachelor of Medical Laboratory Technology programs",
+      icon: "Stethoscope",
+      courses: bmltCourses
+    },
+    {
+      id: 'dmlt',
+      name: "DMLT Programs",
+      description: "Diploma in Medical Laboratory Technology programs",
+      icon: "Award",
+      courses: dmltCourses
     },
     {
       id: 'upcoming',
@@ -241,16 +254,7 @@ const HomePage = () => {
           <ChevronDown size={24} className="text-muted-foreground" />
         </motion.div>
 
-        {/* Floating elements */}
-        <motion.div animate={{ y: [0, -15, 0] }} transition={{ repeat: Infinity, duration: 4, delay: 0.5 }} className="absolute top-1/4 right-[10%] glass-panel p-4 rounded-2xl hidden lg:flex items-center gap-3 z-10">
-          <Stethoscope className="text-primary" size={24} />
-          <div><p className="font-semibold text-sm">8+ Courses</p><p className="text-xs text-muted-foreground">Paramedical Programs</p></div>
-        </motion.div>
-        <motion.div animate={{ y: [0, -12, 0] }} transition={{ repeat: Infinity, duration: 3.5, delay: 1 }} className="absolute bottom-1/4 right-[20%] glass-panel p-4 rounded-2xl hidden lg:flex items-center gap-3 z-10">
-          <Award className="text-secondary" size={24} />
-          <div><p className="font-semibold text-sm">500+ Students</p><p className="text-xs text-muted-foreground">Enrolled</p></div>
-        </motion.div>
-      </section>
+                      </section>
 
       {/* Stats */}
       <section className="py-16 mesh-bg">
@@ -279,7 +283,22 @@ const HomePage = () => {
                     <div className="w-12 h-12 rounded-xl gradient-primary-bg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                       {category.icon === "GraduationCap" ? <GraduationCap size={22} className="text-primary-foreground" /> : <Award size={22} className="text-primary-foreground" />}
                     </div>
-                    <h3 className="font-display font-bold text-lg mb-2">{category.name}</h3>
+                    <div className="flex items-center gap-2 mb-2">
+                      <h3 className="font-display font-bold text-lg">{category.name}</h3>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        category.id === 'bsc' ? 'bg-blue-100 text-blue-800' :
+                        category.id === 'bcom' ? 'bg-green-100 text-green-800' :
+                        category.id === 'bmlt' ? 'bg-purple-100 text-purple-800' :
+                        category.id === 'dmlt' ? 'bg-orange-100 text-orange-800' :
+                        'bg-gray-100 text-gray-800'
+                      }`}>
+                        {category.id === 'bsc' ? 'BSC' :
+                         category.id === 'bcom' ? 'BCOM' :
+                         category.id === 'bmlt' ? 'BMLT' :
+                         category.id === 'dmlt' ? 'DMLT' :
+                         'Upcoming'}
+                      </span>
+                    </div>
                     <p className="text-sm text-muted-foreground mb-3">{category.description}</p>
                     <div className="flex items-center justify-between text-xs text-muted-foreground">
                       <span>{category.courses.length} Programs Available</span>

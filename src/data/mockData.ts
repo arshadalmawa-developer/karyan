@@ -10,7 +10,6 @@ export const collegeInfo = {
 };
 
 export const stats = [
-  { label: "Students", value: 500, suffix: "+" },
   { label: "Expert Faculty", value: 35, suffix: "+" },
   { label: "Modern Labs", value: 12, suffix: "" },
   { label: "Courses Offered", value: 8, suffix: "" },

@@ -19,7 +19,17 @@ export const FloatingActions = () => {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0, opacity: 0 }}
               transition={{ delay: 0.1 }}
-              href="tel:8460401798"
+              href="tel:8989115868"
+              className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center text-secondary-foreground shadow-lg hover:scale-110 transition-transform"
+            >
+              <Phone size={20} />
+            </motion.a>
+            <motion.a
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0, opacity: 0 }}
+              transition={{ delay: 0.2 }}
+              href="tel:6262586862"
               className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center text-secondary-foreground shadow-lg hover:scale-110 transition-transform"
             >
               <Phone size={20} />

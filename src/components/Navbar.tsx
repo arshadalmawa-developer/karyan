@@ -59,9 +59,14 @@ export const Navbar = () => {
           </div>
 
           <div className="flex items-center gap-2">
-            <a href="tel:8460401798" className="hidden sm:flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors">
-              <Phone size={14} /> 8460401798
-            </a>
+            <div className="hidden sm:flex items-center gap-3 text-xs text-muted-foreground">
+              <a href="tel:8989115868" className="flex items-center gap-1 hover:text-primary transition-colors">
+                <Phone size={14} /> 8989115868
+              </a>
+              <a href="tel:6262586862" className="flex items-center gap-1 hover:text-primary transition-colors">
+                <Phone size={14} /> 6262586862
+              </a>
+            </div>
             <button onClick={toggle} className="p-2 rounded-lg hover:bg-muted transition-colors">
               {isDark ? <Sun size={18} /> : <Moon size={18} />}
             </button>

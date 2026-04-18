@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Eye, EyeOff, Lock, Mail, Shield } from 'lucide-react';
 import logo from '@/assets/logo.png';
 
@@ -59,8 +60,8 @@ export default function AdminLogin() {
           <div className="glass-panel rounded-2xl p-8">
             <div className="text-center mb-8">
               <div className="flex justify-center mb-4">
-                <div className="w-16 h-16 rounded-full gradient-primary-bg flex items-center justify-center">
-                  <Shield size={32} className="text-primary-foreground" />
+                <div className="w-32 h-32 rounded-full flex items-center justify-center">
+                  <img src={logo.src} alt="Karyon College" className="w-28 h-28 object-contain" />
                 </div>
               </div>
               <h1 className="text-2xl font-display font-bold gradient-text mb-2">
@@ -86,6 +87,7 @@ export default function AdminLogin() {
                 OTP Code
               </label>
               <input
+                key="otp-input"
                 id="otp"
                 type="text"
                 value={otp}
@@ -94,6 +96,7 @@ export default function AdminLogin() {
                 className="w-full px-4 py-3 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-center text-2xl font-mono"
                 maxLength={6}
                 required
+                autoComplete="off"
               />
             </div>
 
@@ -151,8 +154,8 @@ export default function AdminLogin() {
           {/* Logo and Header */}
           <div className="text-center mb-8">
             <div className="flex justify-center mb-4">
-              <div className="w-16 h-16 rounded-full gradient-primary-bg flex items-center justify-center">
-                <Shield size={32} className="text-primary-foreground" />
+              <div className="w-32 h-32 rounded-full flex items-center justify-center">
+                <img src={logo.src} alt="Karyon College" className="w-28 h-28 object-contain" />
               </div>
             </div>
             <h1 className="text-2xl font-display font-bold gradient-text mb-2">
@@ -185,6 +188,7 @@ export default function AdminLogin() {
                   className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground"
                 />
                 <input
+                  key="email-input"
                   id="email"
                   type="email"
                   value={email}
@@ -192,6 +196,7 @@ export default function AdminLogin() {
                   placeholder="please enter your email"
                   className="w-full pl-10 pr-4 py-3 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                   required
+                  autoComplete="email"
                 />
               </div>
             </div>
@@ -206,6 +211,7 @@ export default function AdminLogin() {
                   className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground"
                 />
                 <input
+                  key="password-input"
                   id="password"
                   type={showPassword ? 'text' : 'password'}
                   value={password}
@@ -213,6 +219,7 @@ export default function AdminLogin() {
                   placeholder="Enter your password"
                   className="w-full pl-10 pr-12 py-3 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                   required
+                  autoComplete="current-password"
                 />
                 <button
                   type="button"
@@ -237,12 +244,12 @@ export default function AdminLogin() {
 
           {/* Back to Site */}
           <div className="mt-6 text-center">
-            <a
+            <Link
               href="/"
               className="text-sm text-muted-foreground hover:text-primary transition-colors"
             >
               ← Back to Website
-            </a>
+            </Link>
           </div>
         </div>
       </motion.div>

@@ -10,7 +10,7 @@ import { toast } from 'sonner';
 const AdminCourses = () => {
   const [items, setItems] = useState<any[]>([]);
   const [modal, setModal] = useState<{ open: boolean; editing: any | null }>({ open: false, editing: null });
-  const [form, setForm] = useState({ name: '', duration: '', seats: '', description: '', category: 'B.SC' as 'B.SC' | 'B.COM' });
+  const [form, setForm] = useState({ name: '', duration: '', seats: '', description: '', category: 'BSC' as 'BSC' | 'BCOM' | 'BMLT' | 'DMLT' | 'Upcoming' });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -34,13 +34,13 @@ const AdminCourses = () => {
       duration: c.duration, 
       seats: c.seats ? c.seats.toString() : '', 
       description: c.description || '',
-      category: c.category || 'B.SC'
+      category: c.category || 'BSC'
     });
     setModal({ open: true, editing: c });
   };
 
   const openNew = () => {
-    setForm({ name: '', duration: '', seats: '', description: '', category: 'B.SC' });
+    setForm({ name: '', duration: '', seats: '', description: '', category: 'BSC' });
     setModal({ open: true, editing: null });
   };
 
@@ -111,8 +111,19 @@ const AdminCourses = () => {
           items.map((c, i) => (
             <motion.div key={c._id} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }} className="glass-panel rounded-2xl p-5">
             <div className="flex items-start justify-between">
-              <div>
-                <h3 className="font-display font-bold text-lg">{c.name}</h3>
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-2">
+                  <h3 className="font-display font-bold text-lg">{c.name}</h3>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                    c.category === 'BSC' ? 'bg-blue-100 text-blue-800' :
+                    c.category === 'BCOM' ? 'bg-green-100 text-green-800' :
+                    c.category === 'BMLT' ? 'bg-purple-100 text-purple-800' :
+                    c.category === 'DMLT' ? 'bg-orange-100 text-orange-800' :
+                    'bg-gray-100 text-gray-800'
+                  }`}>
+                    {c.category}
+                  </span>
+                </div>
                 <p className="text-sm text-muted-foreground mt-1">{c.description}</p>
                 <div className="flex gap-4 mt-3 text-xs text-muted-foreground">
                   <span>Duration: {c.duration}</span>
@@ -151,9 +162,12 @@ const AdminCourses = () => {
               </div>
               <div className="space-y-4">
                 <input placeholder="Course Name" value={form.name} onChange={e => setForm(prev => ({ ...prev, name: e.target.value }))} className="w-full px-4 py-3 rounded-xl bg-muted border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors" />
-                <select value={form.category} onChange={e => setForm(prev => ({ ...prev, category: e.target.value as 'B.SC' | 'B.COM' }))} className="w-full px-4 py-3 rounded-xl bg-muted border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors">
-                  <option value="B.SC">B.SC - Bachelor of Science</option>
-                  <option value="B.COM">B.COM - Bachelor of Commerce</option>
+                <select value={form.category} onChange={e => setForm(prev => ({ ...prev, category: e.target.value as 'BSC' | 'BCOM' | 'BMLT' | 'DMLT' | 'Upcoming' }))} className="w-full px-4 py-3 rounded-xl bg-muted border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors">
+                  <option value="BSC">BSC - Bachelor of Science</option>
+                  <option value="BCOM">BCOM - Bachelor of Commerce</option>
+                  <option value="BMLT">BMLT - Bachelor of Medical Laboratory Technology</option>
+                  <option value="DMLT">DMLT - Diploma in Medical Laboratory Technology</option>
+                  <option value="Upcoming">Upcoming Courses</option>
                 </select>
                 <input placeholder="Duration" value={form.duration} onChange={e => setForm(prev => ({ ...prev, duration: e.target.value }))} className="w-full px-4 py-3 rounded-xl bg-muted border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors" />
                 <input placeholder="Seats" type="number" value={form.seats} onChange={e => setForm(prev => ({ ...prev, seats: e.target.value }))} className="w-full px-4 py-3 rounded-xl bg-muted border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors" />

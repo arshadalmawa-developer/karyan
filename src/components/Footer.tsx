@@ -21,16 +21,19 @@ export const Footer = () => (
         <div>
           <h4 className="font-display font-semibold mb-3">Courses</h4>
           <div className="space-y-2">
-            {['B.Sc. MLT', 'B.Sc. Radiology', 'B.Sc. OTT', 'B.Sc. Optometry', 'Diploma MLT'].map(c => (
-              <p key={c} className="text-sm text-muted-foreground">{c}</p>
+            {['BSC', 'BCOM', 'BMLT', 'DMLT'].map(c => (
+              <Link key={c} href="/courses" className="block text-sm text-muted-foreground hover:text-primary transition-colors">{c}</Link>
             ))}
           </div>
         </div>
         <div>
           <h4 className="font-display font-semibold mb-3">Contact</h4>
           <div className="space-y-3">
-            <a href="tel:8460401798" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors">
-              <Phone size={14} /> {collegeInfo.phone}
+            <a href="tel:8989115868" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors">
+              <Phone size={14} /> 8989115868
+            </a>
+            <a href="tel:6262586862" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors">
+              <Phone size={14} /> 6262586862
             </a>
             <a href={`mailto:${collegeInfo.email}`} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors">
               <Mail size={14} /> {collegeInfo.email}

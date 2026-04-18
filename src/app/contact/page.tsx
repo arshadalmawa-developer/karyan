@@ -30,7 +30,7 @@ const ContactPage = () => {
             {/* Info */}
             <div className="space-y-6">
               {[
-                { icon: Phone, label: "Phone", value: collegeInfo.phone, href: `tel:${collegeInfo.phone}` },
+                { icon: Phone, label: "Phone", value: `${collegeInfo.phone}, 6262586862`, href: `tel:${collegeInfo.phone}` },
                 { icon: Mail, label: "Email", value: collegeInfo.email, href: `mailto:${collegeInfo.email}` },
                 { icon: MapPin, label: "Address", value: collegeInfo.address },
               ].map((c, i) => (
@@ -96,14 +96,14 @@ const ContactPage = () => {
       </section>
 
       {/* Google Maps Section */}
-      <section className="py-1 bg-gray-50">
-        <div className="container mx-auto px-4">
+      <section className="py-16 bg-black">
+        <div className="mx-auto max-w-6xl px-4">
           <ScrollReveal delay={0.3} direction="up">
             <MapSection 
               location="KARYON GROUP OF INSTITUTION, Chandan Nagar, Pune, Maharashtra"
               coordinates="22.0621138,78.9374201"
-              height="h-96"
-              className="max-w-4xl mx-auto"
+              height="h-[450px]"
+              className="w-full rounded-xl overflow-hidden shadow-lg"
             />
           </ScrollReveal>
         </div>
