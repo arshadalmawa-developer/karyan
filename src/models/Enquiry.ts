@@ -29,6 +29,11 @@ const EnquirySchema = new mongoose.Schema({
     type: String,
     enum: ['New', 'Replied'],
     default: 'New'
+  },
+  source: {
+    type: String,
+    enum: ['contact', 'popup'],
+    required: true
   }
 }, {
   timestamps: true

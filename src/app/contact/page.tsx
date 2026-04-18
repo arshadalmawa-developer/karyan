@@ -14,10 +14,28 @@ import { toast } from 'sonner';
 const ContactPage = () => {
   const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success('Message sent successfully! We will contact you soon.');
-    setForm({ name: '', email: '', phone: '', message: '' });
+    
+    try {
+      const response = await fetch('/api/enquiries', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ...form, source: 'contact' }),
+      });
+
+      if (response.ok) {
+        toast.success('Message sent successfully! We will contact you soon.');
+        setForm({ name: '', email: '', phone: '', message: '' });
+      } else {
+        const error = await response.json();
+        toast.error(error.error || 'Failed to send message');
+      }
+    } catch (error) {
+      toast.error('Failed to send message. Please try again.');
+    }
   };
 
   return (
@@ -69,7 +87,7 @@ const ContactPage = () => {
                       required={f.required}
                       value={form[f.name as keyof typeof form]}
                       onChange={(e) => setForm(prev => ({ ...prev, [f.name]: e.target.value }))}
-                      className="w-full px-4 py-3 rounded-xl bg-muted border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors"
+                      className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 placeholder-gray-400 focus:border-primary focus:ring-2 focus:ring-primary outline-none transition-colors"
                     />
                   ))}
                   <textarea
@@ -78,7 +96,7 @@ const ContactPage = () => {
                     required
                     value={form.message}
                     onChange={(e) => setForm(prev => ({ ...prev, message: e.target.value }))}
-                    className="w-full px-4 py-3 rounded-xl bg-muted border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors resize-none"
+                    className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 placeholder-gray-400 focus:border-primary focus:ring-2 focus:ring-primary outline-none transition-colors resize-none"
                   />
                   <motion.button
                     whileHover={{ scale: 1.02 }}
@@ -96,7 +114,7 @@ const ContactPage = () => {
       </section>
 
       {/* Google Maps Section */}
-      <section className="py-16 bg-black">
+      <section className="py-16 mesh-bg">
         <div className="mx-auto max-w-6xl px-4">
           <ScrollReveal delay={0.3} direction="up">
             <MapSection 

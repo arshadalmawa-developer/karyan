@@ -11,31 +11,44 @@ const AdminEnquiries = () => {
   const [items, setItems] = useState<any[]>([]);
   const [selectedMessage, setSelectedMessage] = useState<any | null>(null);
   const [messageModal, setMessageModal] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Load enquiries from storage
-    if (typeof window !== 'undefined') {
-      setItems(enquiryStorage.getEnquiries());
-    }
-  }, []);
-
-  useEffect(() => {
-    // Listen for storage changes to refresh enquiries
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'enquiries') {
-        setItems(enquiryStorage.getEnquiries());
+    const fetchEnquiries = async () => {
+      try {
+        const response = await fetch('/api/enquiries');
+        if (response.ok) {
+          const enquiries = await response.json();
+          setItems(enquiries);
+        } else {
+          toast.error('Failed to fetch enquiries');
+        }
+      } catch (error) {
+        console.error('Error fetching enquiries:', error);
+        toast.error('Failed to fetch enquiries');
+      } finally {
+        setLoading(false);
       }
     };
 
-    if (typeof window !== 'undefined') {
-      window.addEventListener('storage', handleStorageChange);
-      return () => window.removeEventListener('storage', handleStorageChange);
-    }
+    fetchEnquiries();
   }, []);
 
-  const toggleStatus = (id: number) => {
+  const refreshEnquiries = async () => {
     try {
-      const enquiry = items.find(i => i.id === id);
+      const response = await fetch('/api/enquiries');
+      if (response.ok) {
+        const enquiries = await response.json();
+        setItems(enquiries);
+      }
+    } catch (error) {
+      console.error('Error refreshing enquiries:', error);
+    }
+  };
+
+  const toggleStatus = async (id: string) => {
+    try {
+      const enquiry = items.find(i => i._id === id);
       if (!enquiry) {
         console.error('Enquiry not found');
         return;
@@ -43,44 +56,42 @@ const AdminEnquiries = () => {
       
       const newStatus = enquiry.status === 'New' ? 'Replied' : 'New';
       
-      // Update storage
-      enquiryStorage.updateEnquiryStatus(id, newStatus);
-      
-      // Update local state
-      setItems(prev => prev.map(i => i.id === id ? { ...i, status: newStatus } : i));
-      
-      // Dispatch storage event to notify other components
-      if (typeof window !== 'undefined') {
-        window.dispatchEvent(new StorageEvent('storage', {
-          key: 'enquiries',
-          newValue: localStorage.getItem('enquiries')
-        }));
+      // Update via API
+      const response = await fetch('/api/enquiries', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id, status: newStatus }),
+      });
+
+      if (response.ok) {
+        // Update local state
+        setItems(prev => prev.map(i => i._id === id ? { ...i, status: newStatus } : i));
+        toast.success('Status updated successfully');
+      } else {
+        toast.error('Failed to update status');
       }
-      
-      toast.success('Status updated');
     } catch (error) {
-      console.error('Failed to update status:', error);
+      console.error('Error updating status:', error);
       toast.error('Failed to update status');
     }
   };
 
-  const deleteEnquiry = (id: number) => {
+  const deleteEnquiry = async (id: string) => {
     try {
-      // Delete from storage
-      enquiryStorage.deleteEnquiry(id);
-      
-      // Update local state
-      setItems(prev => prev.filter(i => i.id !== id));
-      
-      // Dispatch storage event to notify other components
-      if (typeof window !== 'undefined') {
-        window.dispatchEvent(new StorageEvent('storage', {
-          key: 'enquiries',
-          newValue: localStorage.getItem('enquiries')
-        }));
+      // Delete via API
+      const response = await fetch(`/api/enquiries?id=${id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        // Update local state
+        setItems(prev => prev.filter(i => i._id !== id));
+        toast.success('Enquiry deleted successfully');
+      } else {
+        toast.error('Failed to delete enquiry');
       }
-      
-      toast.success('Enquiry deleted successfully');
     } catch (error) {
       console.error('Failed to delete enquiry:', error);
       toast.error('Failed to delete enquiry');
@@ -103,6 +114,7 @@ const AdminEnquiries = () => {
                 <th className="text-left p-4 font-medium">Name</th>
                 <th className="text-left p-4 font-medium hidden md:table-cell">Email</th>
                 <th className="text-left p-4 font-medium">Message</th>
+                <th className="text-left p-4 font-medium">Source</th>
                 <th className="text-left p-4 font-medium">Status</th>
                 <th className="text-center p-4 font-medium">Action</th>
                 <th className="text-center p-4 font-medium">Delete</th>
@@ -110,12 +122,22 @@ const AdminEnquiries = () => {
             </thead>
             <tbody>
               {items.map((e, i) => (
-                <motion.tr key={e.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.05 }} className="border-b border-border/50 hover:bg-muted/30">
+                <motion.tr key={e._id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.05 }} className="border-b border-border/50 hover:bg-muted/30">
                   <td className="p-4 font-medium">{e.name}</td>
-                  <td className="p-4 text-muted-foreground hidden md:table-cell">{e.email}</td>
+                  <td className="p-4 text-foreground hidden md:table-cell">
+                    <a 
+                      href={`https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(e.email)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline hover:text-primary/80 transition-colors"
+                      title="Compose email in Gmail"
+                    >
+                      {e.email}
+                    </a>
+                  </td>
                   <td className="p-4">
                     <div className="flex items-center gap-2">
-                      <span className="text-muted-foreground max-w-xs truncate">{e.message}</span>
+                      <span className="text-foreground max-w-xs truncate">{e.message}</span>
                       <button
                         onClick={() => viewMessage(e)}
                         className="p-1 rounded-lg hover:bg-primary/10 text-primary transition-colors flex-shrink-0"
@@ -126,11 +148,20 @@ const AdminEnquiries = () => {
                     </div>
                   </td>
                   <td className="p-4">
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      e.source === 'contact' 
+                        ? 'bg-blue-100 text-blue-800' 
+                        : 'bg-green-100 text-green-800'
+                    }`}>
+                      {e.source === 'contact' ? 'Contact Form' : 'Quick Enquiry'}
+                    </span>
+                  </td>
+                  <td className="p-4">
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${e.status === 'New' ? 'bg-primary/10 text-primary' : 'bg-secondary/10 text-secondary'}`}>{e.status}</span>
                   </td>
                   <td className="p-4 text-center">
                     <button 
-                      onClick={() => toggleStatus(e.id)} 
+                      onClick={() => toggleStatus(e._id)} 
                       className="text-xs font-medium text-primary hover:text-primary/80 hover:underline px-3 py-1 rounded hover:bg-primary/10 transition-colors cursor-pointer border border-transparent hover:border-primary/20"
                       type="button"
                     >
@@ -139,7 +170,7 @@ const AdminEnquiries = () => {
                   </td>
                   <td className="p-4 text-center">
                     <button
-                      onClick={() => deleteEnquiry(e.id)}
+                      onClick={() => deleteEnquiry(e._id)}
                       className="p-2 rounded-lg hover:bg-destructive/10 text-destructive transition-colors flex items-center justify-center mx-auto"
                       title="Delete enquiry"
                     >
@@ -183,29 +214,29 @@ const AdminEnquiries = () => {
               <div className="space-y-4">
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">Name</label>
-                    <p className="font-semibold">{selectedMessage.name}</p>
+                    <label className="text-sm font-medium text-foreground">Name</label>
+                    <p className="font-semibold text-foreground">{selectedMessage.name}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">Email</label>
-                    <p className="font-semibold">{selectedMessage.email}</p>
+                    <label className="text-sm font-medium text-foreground">Email</label>
+                    <p className="font-semibold text-foreground">{selectedMessage.email}</p>
                   </div>
                 </div>
                 
                 {selectedMessage.phone && (
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">Phone</label>
-                    <p className="font-semibold">{selectedMessage.phone}</p>
+                    <label className="text-sm font-medium text-foreground">Phone</label>
+                    <p className="font-semibold text-foreground">{selectedMessage.phone}</p>
                   </div>
                 )}
                 
                 <div>
-                  <label className="text-sm font-medium text-muted-foreground">Date</label>
-                  <p className="font-semibold">{selectedMessage.date}</p>
+                  <label className="text-sm font-medium text-foreground">Date</label>
+                  <p className="font-semibold text-foreground">{selectedMessage.date}</p>
                 </div>
                 
                 <div>
-                  <label className="text-sm font-medium text-muted-foreground">Status</label>
+                  <label className="text-sm font-medium text-foreground">Status</label>
                   <div className="mt-1">
                     <span className={`px-3 py-1 rounded-full text-sm font-medium inline-block ${
                       selectedMessage.status === 'New' 
@@ -218,9 +249,22 @@ const AdminEnquiries = () => {
                 </div>
                 
                 <div>
-                  <label className="text-sm font-medium text-muted-foreground">Message</label>
-                  <div className="mt-2 p-4 bg-muted/50 rounded-lg">
-                    <p className="whitespace-pre-wrap">{selectedMessage.message}</p>
+                  <label className="text-sm font-medium text-foreground">Message</label>
+                  <div className="mt-2 p-4 bg-gray-300 border border-gray-500 rounded-lg">
+                    <p className="whitespace-pre-wrap text-gray-900">{selectedMessage.message}</p>
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="text-sm font-medium text-foreground">Source</label>
+                  <div className="mt-2">
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      selectedMessage.source === 'contact' 
+                        ? 'bg-blue-100 text-blue-800' 
+                        : 'bg-green-100 text-green-800'
+                    }`}>
+                      {selectedMessage.source === 'contact' ? 'Contact Form' : 'Quick Enquiry'}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -234,7 +278,7 @@ const AdminEnquiries = () => {
                 </button>
                 <button
                   onClick={() => {
-                    toggleStatus(selectedMessage.id);
+                    toggleStatus(selectedMessage._id);
                     setMessageModal(false);
                   }}
                   className="px-4 py-2 rounded-lg gradient-primary-bg text-primary-foreground hover:opacity-90 transition-opacity"

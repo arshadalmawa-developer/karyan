@@ -88,8 +88,8 @@ const CoursesPage = () => {
                               <BookOpen size={22} className="text-primary-foreground" />
                             </div>
                             <h3 className="font-display font-bold text-lg mb-2 group-hover:text-primary transition-colors">{course.name}</h3>
-                            <p className="text-sm text-muted-foreground mb-4">{course.description}</p>
-                            <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                            <p className="text-sm text-foreground mb-4">{course.description}</p>
+                            <div className="flex items-center gap-4 text-xs text-foreground">
                               <span className="flex items-center gap-1"><Clock size={12} />{course.duration}</span>
                               <span className="flex items-center gap-1"><Users size={12} />{course.seats} Seats</span>
                               <span className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -129,8 +129,8 @@ const CoursesPage = () => {
                               <BookOpen size={22} className="text-primary-foreground" />
                             </div>
                             <h3 className="font-display font-bold text-lg mb-2 group-hover:text-primary transition-colors">{course.name}</h3>
-                            <p className="text-sm text-muted-foreground mb-4">{course.description}</p>
-                            <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                            <p className="text-sm text-foreground mb-4">{course.description}</p>
+                            <div className="flex items-center gap-4 text-xs text-foreground">
                               <span className="flex items-center gap-1"><Clock size={12} />{course.duration}</span>
                               <span className="flex items-center gap-1"><Users size={12} />{course.seats} Seats</span>
                               <span className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -170,8 +170,8 @@ const CoursesPage = () => {
                               <BookOpen size={22} className="text-primary-foreground" />
                             </div>
                             <h3 className="font-display font-bold text-lg mb-2 group-hover:text-primary transition-colors">{course.name}</h3>
-                            <p className="text-sm text-muted-foreground mb-4">{course.description}</p>
-                            <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                            <p className="text-sm text-foreground mb-4">{course.description}</p>
+                            <div className="flex items-center gap-4 text-xs text-foreground">
                               <span className="flex items-center gap-1"><Clock size={12} />{course.duration}</span>
                               <span className="flex items-center gap-1"><Users size={12} />{course.seats} Seats</span>
                               <span className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -211,8 +211,8 @@ const CoursesPage = () => {
                               <BookOpen size={22} className="text-primary-foreground" />
                             </div>
                             <h3 className="font-display font-bold text-lg mb-2 group-hover:text-primary transition-colors">{course.name}</h3>
-                            <p className="text-sm text-muted-foreground mb-4">{course.description}</p>
-                            <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                            <p className="text-sm text-foreground mb-4">{course.description}</p>
+                            <div className="flex items-center gap-4 text-xs text-foreground">
                               <span className="flex items-center gap-1"><Clock size={12} />{course.duration}</span>
                               <span className="flex items-center gap-1"><Users size={12} />{course.seats} Seats</span>
                               <span className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -255,8 +255,8 @@ const CoursesPage = () => {
                               <span className="px-2 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full">Coming Soon</span>
                             </div>
                             <h3 className="font-display font-bold text-lg mb-2 group-hover:text-primary transition-colors">{course.name}</h3>
-                            <p className="text-sm text-muted-foreground mb-4">{course.description}</p>
-                            <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                            <p className="text-sm text-foreground mb-4">{course.description}</p>
+                            <div className="flex items-center gap-4 text-xs text-foreground">
                               <span className="flex items-center gap-1"><Clock size={12} />{course.duration}</span>
                               <span className="flex items-center gap-1"><Users size={12} />{course.seats} Seats</span>
                               <span className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -284,7 +284,7 @@ const CoursesPage = () => {
                     <BookOpen size={24} className="text-muted-foreground" />
                   </div>
                   <h3 className="text-lg font-semibold mb-2">No Courses Available</h3>
-                  <p className="text-muted-foreground">No courses have been added yet. Please check back later.</p>
+                  <p className="text-foreground">No courses have been added yet. Please check back later.</p>
                 </div>
               )}
             </div>
@@ -314,17 +314,17 @@ const CoursesPage = () => {
                 <X size={20} />
               </button>
               <div className="w-16 h-16 rounded-2xl gradient-primary-bg flex items-center justify-center mb-6">
-                <BookOpen size={28} className="text-primary-foreground" />
+                <BookOpen size={24} className="text-foreground" />
               </div>
               <h2 className="text-2xl font-display font-bold mb-3">{selected.name}</h2>
-              <p className="text-muted-foreground mb-6">{selected.description}</p>
+              <p className="text-foreground mb-6">{selected.description}</p>
               <div className="grid grid-cols-2 gap-4">
                 <div className="glass-panel rounded-xl p-4 text-center">
-                  <p className="text-xs text-muted-foreground">Duration</p>
+                  <p className="text-xs text-foreground">Duration</p>
                   <p className="font-bold gradient-text">{selected.duration}</p>
                 </div>
                 <div className="glass-panel rounded-xl p-4 text-center">
-                  <p className="text-xs text-muted-foreground">Available Seats</p>
+                  <p className="text-xs text-foreground">Available Seats</p>
                   <p className="font-bold gradient-text">{selected.seats}</p>
                 </div>
               </div>

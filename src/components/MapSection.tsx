@@ -21,7 +21,7 @@ const MapSection: React.FC<MapSectionProps> = ({
     <section className={`w-full ${className}`}>
       {/* Location Heading */}
       <div className="mb-4 sm:mb-6 text-center px-4">
-        <h2 className="text-lg sm:text-xl font-semibold text-white">{location}</h2>
+        <h2 className="text-lg sm:text-xl font-semibold text-foreground">{location}</h2>
       </div>
       
       {/* Map Container */}

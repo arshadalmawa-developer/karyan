@@ -18,10 +18,10 @@ const AboutPage = () => {
             <div className="max-w-4xl mx-auto">
               <div className="glass-panel rounded-2xl p-8 mb-12">
                 <h2 className="text-2xl font-bold mb-4">Our Mission</h2>
-                <p className="text-muted-foreground mb-6">
+                <p className="text-foreground mb-6">
                   {collegeInfo.description}
                 </p>
-                <p className="text-muted-foreground">
+                <p className="text-foreground">
                   We are committed to providing quality education in paramedical sciences, 
                   equipping students with the knowledge and skills needed to excel in their careers.
                 </p>
@@ -40,7 +40,7 @@ const AboutPage = () => {
                         <feature.icon size={24} className="text-primary-foreground" />
                       </div>
                       <h3 className="font-bold text-lg mb-2">{feature.title}</h3>
-                      <p className="text-sm text-muted-foreground">{feature.description}</p>
+                      <p className="text-sm text-foreground">{feature.description}</p>
                     </div>
                   </ScrollReveal>
                 ))}
@@ -48,11 +48,11 @@ const AboutPage = () => {
 
               <div className="glass-panel rounded-2xl p-8">
                 <h2 className="text-2xl font-bold mb-4">Our History</h2>
-                <p className="text-muted-foreground mb-4">
+                <p className="text-foreground mb-4">
                   Established in {collegeInfo.established}, Karyon College has been a leader in 
                   paramedical education for over two decades.
                 </p>
-                <p className="text-muted-foreground">
+                <p className="text-foreground">
                   We have successfully trained hundreds of students who are now working in 
                   prestigious healthcare institutions across the country.
                 </p>

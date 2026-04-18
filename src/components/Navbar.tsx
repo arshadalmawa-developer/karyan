@@ -28,7 +28,7 @@ export const Navbar = () => {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ type: "spring", stiffness: 100, damping: 20 }}
-      className="fixed top-0 left-0 right-0 z-40 glass-panel"
+      className="sticky top-0 left-0 right-0 z-40 glass-panel"
     >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
@@ -45,7 +45,7 @@ export const Navbar = () => {
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors relative ${
                   pathname === link.path
                     ? 'text-primary'
-                    : 'text-muted-foreground hover:text-foreground'
+                    : 'text-foreground hover:text-primary'
                 }`}
               >
                 {link.label}
@@ -59,7 +59,7 @@ export const Navbar = () => {
           </div>
 
           <div className="flex items-center gap-2">
-            <div className="hidden sm:flex items-center gap-3 text-xs text-muted-foreground">
+            <div className="hidden sm:flex items-center gap-3 text-xs text-foreground">
               <a href="tel:8989115868" className="flex items-center gap-1 hover:text-primary transition-colors">
                 <Phone size={14} /> 8989115868
               </a>
@@ -101,7 +101,7 @@ export const Navbar = () => {
                     href={link.path}
                     onClick={() => setIsOpen(false)}
                     className={`block px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      pathname === link.path ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                      pathname === link.path ? 'bg-primary text-primary-foreground' : 'text-foreground hover:text-primary hover:bg-muted'
                     }`}
                   >
                     {link.label}

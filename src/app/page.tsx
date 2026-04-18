@@ -10,7 +10,7 @@ import { ScrollReveal } from '@/components/ScrollReveal';
 import { SectionHeading } from '@/components/SectionHeading';
 import { LoadingScreen } from '@/components/LoadingScreen';
 import { FloatingActions } from '@/components/FloatingActions';
-import { stats, facilities, testimonials, collegeInfo } from '@/data/mockData';
+import { stats, facilities, collegeInfo } from '@/data/mockData';
 import { courseStorage } from '@/utils/courseStorage';
 import { enquiryStorage } from '@/utils/enquiryStorage';
 import { facilityStorage } from '@/utils/facilityStorage';
@@ -72,6 +72,7 @@ const HomePage = () => {
   const [selectedFacility, setSelectedFacility] = useState<any | null>(null);
   const [facilityModal, setFacilityModal] = useState(false);
   const [coursesData, setCoursesData] = useState<any[]>([]);
+  const [testimonials, setTestimonials] = useState<any[]>([]);
   const heroRef = useRef(null);
 
   useEffect(() => {
@@ -81,6 +82,21 @@ const HomePage = () => {
     if (hasLoaded) {
       setLoading(false);
     }
+
+    // Fetch testimonials from API
+    const fetchTestimonials = async () => {
+      try {
+        const response = await fetch('/api/testimonials');
+        if (response.ok) {
+          const testimonialsData = await response.json();
+          setTestimonials(testimonialsData);
+        }
+      } catch (error) {
+        console.error('Failed to fetch testimonials:', error);
+      }
+    };
+
+    fetchTestimonials();
   }, []);
 
   useEffect(() => {
@@ -145,31 +161,36 @@ const HomePage = () => {
     sessionStorage.setItem('popup-shown', 'true');
   }, []);
 
-  const handleFormSubmit = useCallback((e: React.FormEvent) => {
+  const handleFormSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // Save enquiry to localStorage storage
-      enquiryStorage.addEnquiry({
-        name: formData.name,
-        email: formData.email,
-        message: formData.message || 'Quick enquiry from homepage popup'
+      // Submit enquiry to API
+      const response = await fetch('/api/enquiries', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          message: formData.message || 'Quick enquiry from homepage popup',
+          source: 'popup'
+        }),
       });
-      
-      // Dispatch storage event to notify admin dashboard
-      if (typeof window !== 'undefined') {
-        window.dispatchEvent(new StorageEvent('storage', {
-          key: 'enquiries',
-          newValue: localStorage.getItem('enquiries')
-        }));
+
+      if (response.ok) {
+        console.log('Enquiry submitted:', formData);
+        setShowPopup(false);
+        sessionStorage.setItem('popup-shown', 'true');
+        setFormData({ name: '', email: '', message: '' });
+        // Show success message
+        alert('Enquiry submitted successfully!');
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Failed to submit enquiry. Please try again.');
       }
-      
-      console.log('Enquiry submitted:', formData);
-      setShowPopup(false);
-      sessionStorage.setItem('popup-shown', 'true');
-      setFormData({ name: '', email: '', message: '' });
     } catch (error) {
       console.error('Failed to submit enquiry:', error);
-      // Show error to user
       alert('Failed to submit enquiry. Please try again.');
     }
   }, [formData]);
@@ -191,10 +212,9 @@ const HomePage = () => {
   return (
     <PageLayout>
       {/* Hero */}
-      <section ref={heroRef} className="relative min-h-[90vh] flex items-center overflow-hidden">
-        <div className="absolute inset-0">
-          <img src={heroBg.src} alt="" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-background/80 dark:bg-background/90" />
+      <section ref={heroRef} className="relative min-h-screen flex items-center overflow-hidden">
+        <div className="fixed inset-0 bg-center bg-cover bg-no-repeat -z-10" style={{ backgroundImage: `url(${heroBg.src})`, filter: 'brightness(1.3)' }}>
+          <div className="absolute inset-0 bg-black/70" />
           <div className="absolute inset-0 mesh-bg" />
         </div>
 
@@ -204,28 +224,28 @@ const HomePage = () => {
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
-              className="inline-flex items-center gap-2 glass-panel px-4 py-2 rounded-full mb-6"
+              className="inline-flex items-center gap-2 glass-panel px-4 py-2 rounded-full mb-6 shadow-lg"
             >
               <GraduationCap size={16} className="text-primary" />
-              <span className="text-sm font-medium">Established {collegeInfo.established}</span>
+              <span className="text-sm font-medium text-white">Established {collegeInfo.established}</span>
             </motion.div>
 
             <motion.h1
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.2 }}
-              className="text-4xl md:text-6xl lg:text-7xl font-display font-extrabold leading-tight mb-6"
+              className="text-4xl md:text-6xl lg:text-7xl font-display font-extrabold leading-tight mb-6 drop-shadow-lg"
             >
               <span className="gradient-text">Karyon College</span>
               <br />
-              <span className="text-foreground">Of Paramedical Science</span>
+              <span className="text-white">Of Paramedical Science</span>
             </motion.h1>
 
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="text-lg text-muted-foreground mb-8 max-w-xl"
+              className="text-lg text-white mb-8 max-w-xl drop-shadow"
             >
               {collegeInfo.description}
             </motion.p>
@@ -236,24 +256,17 @@ const HomePage = () => {
               transition={{ duration: 0.6, delay: 0.6 }}
               className="flex flex-wrap gap-4"
             >
-              <Link href="/courses" className="inline-flex items-center gap-2 gradient-primary-bg text-primary-foreground px-6 py-3 rounded-xl font-semibold hover:opacity-90 transition-opacity">
+              <Link href="/courses" className="inline-flex items-center gap-2 gradient-primary-bg text-primary-foreground px-6 py-3 rounded-xl font-semibold hover:scale-105 transition-transform shadow-lg">
                 Explore Courses <ArrowRight size={18} />
               </Link>
-              <Link href="/admissions" className="inline-flex items-center gap-2 glass-panel px-6 py-3 rounded-xl font-semibold hover:bg-muted transition-colors">
+              <Link href="/admissions" className="inline-flex items-center gap-2 glass-panel px-6 py-3 rounded-xl font-semibold hover:scale-105 transition-transform shadow-lg">
                 Apply Now
               </Link>
             </motion.div>
           </div>
         </div>
 
-        <motion.div
-          animate={{ y: [0, 10, 0] }}
-          transition={{ repeat: Infinity, duration: 2 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10"
-        >
-          <ChevronDown size={24} className="text-muted-foreground" />
-        </motion.div>
-
+        
                       </section>
 
       {/* Stats */}
@@ -310,7 +323,7 @@ const HomePage = () => {
             ))}
           </div>
           <div className="text-center mt-8">
-            <Link href="/courses" className="inline-flex items-center gap-2 text-primary font-semibold hover:gap-3 transition-all">
+            <Link href="/courses" className="inline-flex items-center gap-2 text-white font-semibold hover:gap-3 transition-all">
               View All Courses <ArrowRight size={18} />
             </Link>
           </div>
@@ -339,7 +352,7 @@ const HomePage = () => {
             ))}
             {facilitiesData.length === 0 && (
               <div className="col-span-full text-center py-12">
-                <p className="text-muted-foreground">No facilities added yet. Please check back later.</p>
+                <p className="text-white">No facilities added yet. Please check back later.</p>
               </div>
             )}
           </div>
@@ -523,7 +536,7 @@ const HomePage = () => {
                   value={formData.name}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900 placeholder-gray-400 bg-white"
                   placeholder="Enter your name"
                 />
               </div>
@@ -539,7 +552,7 @@ const HomePage = () => {
                   value={formData.email}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-gray-900 placeholder-gray-400 bg-white"
                   placeholder="Enter your email"
                 />
               </div>
@@ -554,7 +567,7 @@ const HomePage = () => {
                   value={formData.message}
                   onChange={handleInputChange}
                   rows={3}
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
+                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none text-gray-900 placeholder-gray-400 bg-white"
                   placeholder="Tell us about your interests or any specific questions..."
                 />
               </div>
