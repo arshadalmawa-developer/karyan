@@ -13,6 +13,7 @@ const AdminDashboard = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [enquiries, setEnquiries] = useState<any[]>([]);
+  const [stats, setStats] = useState({ courses: 0, facilities: 0, enquiries: 0, testimonials: 0 });
 
   useEffect(() => {
     // Only check localStorage on client side
@@ -42,15 +43,32 @@ const AdminDashboard = () => {
         }
       }
     };
+
+    // Fetch stats from API
+    const fetchStats = async () => {
+      try {
+        const response = await fetch('/api/dashboard/stats');
+        if (response.ok) {
+          const statsData = await response.json();
+          setStats(statsData);
+        } else {
+          setStats({ courses: 0, facilities: 0, enquiries: 0, testimonials: 0 });
+        }
+      } catch (error) {
+        console.error('Failed to fetch stats:', error);
+        setStats({ courses: 0, facilities: 0, enquiries: 0, testimonials: 0 });
+      }
+    };
     
     loadEnquiries();
+    fetchStats();
   }, []);
 
   const dashCards = [
-    { label: 'Courses', value: courses.length.toString(), icon: BookOpen, change: '+2' },
-    { label: 'Facilities', value: facilities.length.toString(), icon: Building2, change: '' },
-    { label: 'Testimonials', value: testimonials.length.toString(), icon: GraduationCap, change: '+1' },
-    { label: 'Enquiries', value: enquiries?.length?.toString() || '0', icon: MessageSquare, change: '+5' },
+    { label: 'Courses', value: stats.courses.toString(), icon: BookOpen, change: '' },
+    { label: 'Facilities', value: stats.facilities.toString(), icon: Building2, change: '' },
+    { label: 'Testimonials', value: stats.testimonials.toString(), icon: GraduationCap, change: '' },
+    { label: 'Enquiries', value: stats.enquiries.toString(), icon: MessageSquare, change: '' },
   ];
 
   // Show loading state while checking authentication

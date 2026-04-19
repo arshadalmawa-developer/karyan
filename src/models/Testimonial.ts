@@ -23,8 +23,17 @@ const TestimonialSchema = new mongoose.Schema({
   },
   avatar: {
     type: String,
-    required: true,
     trim: true
+  },
+  image: {
+    type: String,
+    trim: true
+  },
+  rating: {
+    type: Number,
+    min: 1,
+    max: 5,
+    default: 5
   },
   status: {
     type: String,

@@ -17,6 +17,10 @@ const nextConfig = {
   // Disable source maps completely
   productionBrowserSourceMaps: false,
   developmentBrowserSourceMaps: false,
+  // Additional source map settings
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
 }
 
 module.exports = nextConfig

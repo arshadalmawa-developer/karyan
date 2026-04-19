@@ -18,6 +18,16 @@ export async function POST(request: NextRequest) {
     await connectDB();
     const body = await request.json();
     
+    // Validate rating is between 1-5
+    if (body.rating && (body.rating < 1 || body.rating > 5)) {
+      return NextResponse.json({ error: 'Rating must be between 1 and 5' }, { status: 400 });
+    }
+    
+    // Set default avatar if not provided
+    if (!body.avatar && body.name) {
+      body.avatar = body.name.split(' ').map(w => w[0]).join('');
+    }
+    
     const testimonial = await Testimonial.create(body);
     return NextResponse.json(testimonial, { status: 201 });
   } catch (error) {
@@ -31,6 +41,16 @@ export async function PUT(request: NextRequest) {
     await connectDB();
     const body = await request.json();
     const { id, ...updateData } = body;
+    
+    // Validate rating is between 1-5
+    if (updateData.rating && (updateData.rating < 1 || updateData.rating > 5)) {
+      return NextResponse.json({ error: 'Rating must be between 1 and 5' }, { status: 400 });
+    }
+    
+    // Set default avatar if not provided
+    if (!updateData.avatar && updateData.name) {
+      updateData.avatar = updateData.name.split(' ').map(w => w[0]).join('');
+    }
     
     const testimonial = await Testimonial.findByIdAndUpdate(id, updateData, { new: true });
     if (!testimonial) {

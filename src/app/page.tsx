@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useCallback, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowRight, GraduationCap, BookOpen, Stethoscope, Award, ChevronDown, Quote, X, Mail, User, MessageSquare } from 'lucide-react';
+import { ArrowRight, GraduationCap, BookOpen, Stethoscope, Award, ChevronDown, Quote, X, Mail, User, MessageSquare, Star } from 'lucide-react';
 import PageLayout from '@/components/PageLayout';
 import { AnimatedCounter } from '@/components/AnimatedCounter';
 import { ScrollReveal } from '@/components/ScrollReveal';
@@ -12,7 +12,6 @@ import { LoadingScreen } from '@/components/LoadingScreen';
 import { FloatingActions } from '@/components/FloatingActions';
 import { stats, facilities, collegeInfo } from '@/data/mockData';
 import { courseStorage } from '@/utils/courseStorage';
-import { enquiryStorage } from '@/utils/enquiryStorage';
 import { facilityStorage } from '@/utils/facilityStorage';
 import heroBg from '@/assets/hero-bg.jpg';
 
@@ -73,6 +72,8 @@ const HomePage = () => {
   const [facilityModal, setFacilityModal] = useState(false);
   const [coursesData, setCoursesData] = useState<any[]>([]);
   const [testimonials, setTestimonials] = useState<any[]>([]);
+  const [showNotification, setShowNotification] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
   const heroRef = useRef(null);
 
   useEffect(() => {
@@ -99,6 +100,7 @@ const HomePage = () => {
     fetchTestimonials();
   }, []);
 
+  
   useEffect(() => {
     const loadCourses = async () => {
       try {
@@ -183,8 +185,9 @@ const HomePage = () => {
         setShowPopup(false);
         sessionStorage.setItem('popup-shown', 'true');
         setFormData({ name: '', email: '', message: '' });
-        // Show success message
-        alert('Enquiry submitted successfully!');
+        // Show success notification
+        setShowNotification(true);
+        setTimeout(() => setShowNotification(false), 1000);
       } else {
         const error = await response.json();
         alert(error.error || 'Failed to submit enquiry. Please try again.');
@@ -364,51 +367,83 @@ const HomePage = () => {
         <div className="container mx-auto px-4">
           <SectionHeading title="Student Testimonials" subtitle="Hear from our successful graduates" />
           
-          {/* Auto-swiping carousel */}
+          {/* Testimonials Carousel */}
           <div className="relative">
-            <div className="flex gap-6 animate-scroll">
-              {/* First set of testimonials */}
-              {testimonials.map((t, i) => (
-                <div key={`first-${t.id}`} className="min-w-[400px] md:min-w-[500px]">
-                  <motion.div 
-                    whileHover={{ scale: 1.02 }} 
-                    className="glass-panel rounded-2xl p-6 relative h-full"
-                  >
-                    <Quote size={32} className="text-primary/20 absolute top-4 right-4" />
-                    <p className="text-sm text-muted-foreground mb-4 italic">"{t.text}"</p>
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full gradient-primary-bg flex items-center justify-center text-primary-foreground font-bold text-sm">
-                        {t.avatar}
+            <div className="overflow-hidden">
+              <div className="flex gap-6 animate-scroll">
+                {/* First set of testimonials */}
+                {testimonials.map((t, i) => (
+                  <div key={`first-${t._id}`} className="min-w-[400px] md:min-w-[500px] flex-shrink-0">
+                    <motion.div 
+                      whileHover={{ scale: 1.02 }} 
+                      className="glass-panel rounded-2xl p-6 relative h-full"
+                    >
+                      <Quote size={32} className="text-primary/20 absolute top-4 right-4" />
+                      <p className="text-sm text-muted-foreground mb-4 italic">"{t.text}"</p>
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
+                          {t.image ? (
+                            <img src={t.image} alt={t.name} className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full gradient-primary-bg flex items-center justify-center text-primary-foreground font-bold text-sm">
+                              {t.avatar || t.name.split(' ').map(w => w[0]).join('')}
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-semibold text-sm">{t.name}</p>
+                          <p className="text-xs text-muted-foreground">{t.course} - {t.year}</p>
+                          <div className="flex items-center gap-1 mt-1">
+                            {[1, 2, 3, 4, 5].map(star => (
+                              <Star
+                                key={star}
+                                size={12}
+                                className={star <= (t.rating || 5) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}
+                              />
+                            ))}
+                          </div>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-semibold text-sm">{t.name}</p>
-                        <p className="text-xs text-muted-foreground">{t.course} - {t.year}</p>
+                    </motion.div>
+                  </div>
+                ))}
+                {/* Duplicate set for seamless looping */}
+                {testimonials.map((t, i) => (
+                  <div key={`second-${t._id}`} className="min-w-[400px] md:min-w-[500px] flex-shrink-0">
+                    <motion.div 
+                      whileHover={{ scale: 1.02 }} 
+                      className="glass-panel rounded-2xl p-6 relative h-full"
+                    >
+                      <Quote size={32} className="text-primary/20 absolute top-4 right-4" />
+                      <p className="text-sm text-muted-foreground mb-4 italic">"{t.text}"</p>
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
+                          {t.image ? (
+                            <img src={t.image} alt={t.name} className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full gradient-primary-bg flex items-center justify-center text-primary-foreground font-bold text-sm">
+                              {t.avatar || t.name.split(' ').map(w => w[0]).join('')}
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-semibold text-sm">{t.name}</p>
+                          <p className="text-xs text-muted-foreground">{t.course} - {t.year}</p>
+                          <div className="flex items-center gap-1 mt-1">
+                            {[1, 2, 3, 4, 5].map(star => (
+                              <Star
+                                key={star}
+                                size={12}
+                                className={star <= (t.rating || 5) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}
+                              />
+                            ))}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </motion.div>
-                </div>
-              ))}
-              {/* Duplicate set for seamless looping */}
-              {testimonials.map((t, i) => (
-                <div key={`second-${t.id}`} className="min-w-[400px] md:min-w-[500px]">
-                  <motion.div 
-                    whileHover={{ scale: 1.02 }} 
-                    className="glass-panel rounded-2xl p-6 relative h-full"
-                  >
-                    <Quote size={32} className="text-primary/20 absolute top-4 right-4" />
-                    <p className="text-sm text-muted-foreground mb-4 italic">"{t.text}"</p>
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full gradient-primary-bg flex items-center justify-center text-primary-foreground font-bold text-sm">
-                        {t.avatar}
-                      </div>
-                      <div>
-                        <p className="font-semibold text-sm">{t.name}</p>
-                        <p className="text-xs text-muted-foreground">{t.course} - {t.year}</p>
-                      </div>
-                    </div>
-                  </motion.div>
-                </div>
-              ))}
+                    </motion.div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -591,6 +626,20 @@ const HomePage = () => {
           </motion.div>
         </motion.div>
       )}
+      
+      {/* Success Notification */}
+      <AnimatePresence>
+        {showNotification && (
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+            className="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50"
+          >
+            query is submitted
+          </motion.div>
+        )}
+      </AnimatePresence>
       
       <FloatingActions />
     </PageLayout>
