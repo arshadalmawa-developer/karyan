@@ -19,7 +19,7 @@ const courseSchema = new mongoose.Schema({
   category: {
     type: String,
     required: true,
-    enum: ['BSC', 'BCOM', 'BMLT', 'DMLT', 'Upcoming'],
+    enum: ['BSC', 'BCOM', 'BMLT', 'DMLT', 'UPCOMING'],
     default: 'BSC'
   },
   seats: {

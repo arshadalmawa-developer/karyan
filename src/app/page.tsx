@@ -21,7 +21,7 @@ const organizeCourses = (courses: any[]) => {
   const bcomCourses = courses.filter(course => course.category === 'BCOM').slice(0, 3);
   const bmltCourses = courses.filter(course => course.category === 'BMLT').slice(0, 3);
   const dmltCourses = courses.filter(course => course.category === 'DMLT').slice(0, 3);
-  const upcomingCourses = courses.filter(course => course.category === 'Upcoming').slice(0, 3);
+  const upcomingCourses = courses.filter(course => course.category === 'UPCOMING').slice(0, 3);
 
   return [
     {
