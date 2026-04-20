@@ -15,11 +15,15 @@ export const facilityStorage = {
   // Get all facilities from MongoDB API
   async getFacilities(): Promise<Facility[]> {
     try {
+      console.log('DEBUG: facilityStorage.getFacilities() called');
       const response = await fetch('/api/facilities');
+      console.log('DEBUG: API response status:', response.status);
       if (!response.ok) {
         throw new Error('Failed to fetch facilities');
       }
       const facilities = await response.json();
+      console.log('DEBUG: Facilities fetched from API:', facilities.length, 'facilities');
+      console.log('DEBUG: Facilities data:', facilities);
       return facilities;
     } catch (error) {
       console.error('Error fetching facilities:', error);
@@ -30,6 +34,7 @@ export const facilityStorage = {
   // Add a new facility
   async addFacility(facility: Omit<Facility, '_id' | 'createdAt' | 'updatedAt'>): Promise<Facility> {
     try {
+      console.log('DEBUG: facilityStorage.addFacility() called with:', facility);
       const response = await fetch('/api/facilities', {
         method: 'POST',
         headers: {
@@ -38,12 +43,15 @@ export const facilityStorage = {
         body: JSON.stringify(facility),
       });
 
+      console.log('DEBUG: Add facility API response status:', response.status);
       if (!response.ok) {
         const error = await response.json();
+        console.log('DEBUG: Add facility API error response:', error);
         throw new Error(error.error || 'Failed to add facility');
       }
 
       const newFacility = await response.json();
+      console.log('DEBUG: New facility created:', newFacility);
       return newFacility;
     } catch (error) {
       console.error('Error adding facility:', error);

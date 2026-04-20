@@ -54,16 +54,26 @@ const FacilitiesPage = () => {
                     className={`glass-panel rounded-2xl overflow-hidden group cursor-pointer h-full ${modal ? 'opacity-50' : ''}`}
                     onClick={() => viewFacility(f)}
                   >
-                  <div className="h-48 gradient-primary-bg flex items-center justify-center relative overflow-hidden">
-                    <motion.div
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-                      className="absolute w-40 h-40 border border-primary-foreground/10 rounded-full"
-                    />
-                    <Icon size={56} className="text-primary-foreground relative z-10 group-hover:scale-110 transition-transform" />
+                  <div className="h-48 rounded-2xl overflow-hidden flex items-center justify-center relative">
+                    {f.image ? (
+                      <img 
+                        src={f.image} 
+                        alt={f.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full gradient-primary-bg flex items-center justify-center relative overflow-hidden">
+                        <motion.div
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+                          className="absolute w-40 h-40 border border-primary-foreground/10 rounded-full"
+                        />
+                        <Icon size={56} className="text-primary-foreground relative z-10 group-hover:scale-110 transition-transform" />
+                      </div>
+                    )}
                   </div>
                   <div className="p-6">
-                    <h3 className="font-display font-bold text-xl mb-2">{f.title}</h3>
+                    <h3 className="font-display font-bold text-xl mb-2">{f.name}</h3>
                     <p className="text-sm text-muted-foreground">{f.description}</p>
                   </div>
                 </motion.div>
@@ -103,7 +113,7 @@ const FacilitiesPage = () => {
             
             <div className="space-y-4">
               <div>
-                <h3 className="text-lg font-semibold mb-2">{selectedFacility.title}</h3>
+                <h3 className="text-lg font-semibold mb-2">{selectedFacility.name}</h3>
                 <p className="text-muted-foreground">{selectedFacility.description}</p>
               </div>
               

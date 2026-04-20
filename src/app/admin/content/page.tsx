@@ -1,23 +1,70 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { AdminLayout } from '@/components/AdminLayout';
-import { collegeInfo } from '@/data/mockData';
+import { contentStorage } from '@/utils/contentStorage';
 import { toast } from 'sonner';
 
 const AdminContent = () => {
   const [content, setContent] = useState({
-    name: collegeInfo.name,
-    phone: collegeInfo.phone,
-    email: collegeInfo.email,
-    address: collegeInfo.address,
-    description: collegeInfo.description,
-    mission: collegeInfo.mission,
-    vision: collegeInfo.vision,
+    name: '',
+    phone: '',
+    email: '',
+    address: '',
+    description: '',
+    mission: '',
+    vision: '',
   });
+  const [loading, setLoading] = useState(true);
 
-  const save = () => toast.success('Content updated successfully!');
+  useEffect(() => {
+    // Load content from MongoDB
+    const loadContent = async () => {
+      try {
+        const contentData = await contentStorage.getContent();
+        setContent({
+          name: contentData.name || '',
+          phone: contentData.phone || '',
+          email: contentData.email || '',
+          address: contentData.address || '',
+          description: contentData.description || '',
+          mission: contentData.mission || '',
+          vision: contentData.vision || '',
+        });
+      } catch (error) {
+        console.error('Error loading content:', error);
+        toast.error('Failed to load content');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadContent();
+  }, []);
+
+  const save = async () => {
+    try {
+      await contentStorage.updateContent(content);
+      toast.success('Content updated successfully!');
+    } catch (error) {
+      console.error('Error saving content:', error);
+      toast.error('Failed to save content');
+    }
+  };
+
+  if (loading) {
+    return (
+      <AdminLayout>
+        <div className="flex items-center justify-center min-h-[50vh]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading content...</p>
+          </div>
+        </div>
+      </AdminLayout>
+    );
+  }
 
   return (
     <AdminLayout>

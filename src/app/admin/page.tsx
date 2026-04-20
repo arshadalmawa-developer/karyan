@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react';
 import { Users, BookOpen, Building2, MessageSquare, TrendingUp, GraduationCap } from 'lucide-react';
 import { AdminLayout } from '@/components/AdminLayout';
 import { courses, facilities, testimonials } from '@/data/mockData';
-import { enquiryStorage } from '@/utils/enquiryStorage';
 import { useRouter } from 'next/navigation';
 
 const AdminDashboard = () => {
@@ -31,16 +30,22 @@ const AdminDashboard = () => {
   }, [router]);
 
   useEffect(() => {
-    // Load enquiries from storage
+    // Load enquiries from API (same as enquiries page)
     const loadEnquiries = async () => {
-      if (typeof window !== 'undefined') {
-        try {
-          const enquiriesData = await enquiryStorage.getEnquiries();
-          setEnquiries(enquiriesData);
-        } catch (error) {
-          console.error('Failed to load enquiries:', error);
-          setEnquiries([]); // Set empty array on error
+      try {
+        const response = await fetch('/api/enquiries');
+        if (response.ok) {
+          const enquiriesData = await response.json();
+          // Take only recent 5 enquiries for dashboard
+          const recentEnquiries = enquiriesData.slice(0, 5);
+          setEnquiries(recentEnquiries);
+        } else {
+          console.error('Failed to fetch enquiries');
+          setEnquiries([]);
         }
+      } catch (error) {
+        console.error('Failed to load enquiries:', error);
+        setEnquiries([]);
       }
     };
 
@@ -114,7 +119,7 @@ const AdminDashboard = () => {
             <tr className="border-b border-border">
               <th className="text-left py-2 text-muted-foreground font-medium">Name</th>
               <th className="text-left py-2 text-muted-foreground font-medium hidden md:table-cell">Email</th>
-              <th className="text-left py-2 text-muted-foreground font-medium hidden sm:table-cell">Date</th>
+              <th className="text-left py-2 text-muted-foreground font-medium hidden sm:table-cell">Source</th>
               <th className="text-left py-2 text-muted-foreground font-medium">Status</th>
             </tr>
           </thead>
@@ -123,7 +128,15 @@ const AdminDashboard = () => {
               <tr key={e.id} className="border-b border-border/50 hover:bg-muted/50 transition-colors">
                 <td className="py-3 font-medium">{e.name}</td>
                 <td className="py-3 text-muted-foreground hidden md:table-cell">{e.email}</td>
-                <td className="py-3 text-muted-foreground hidden sm:table-cell">{e.date}</td>
+                <td className="py-3 text-muted-foreground hidden sm:table-cell">
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                    e.source === 'contact' 
+                      ? 'bg-blue-100 text-blue-800' 
+                      : 'bg-green-100 text-green-800'
+                  }`}>
+                    {e.source === 'contact' ? 'Contact Form' : 'Quick Enquiry'}
+                  </span>
+                </td>
                 <td className="py-3">
                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                     e.status === 'New' ? 'bg-primary/10 text-primary' : 'bg-secondary/10 text-secondary'

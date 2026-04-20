@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Edit, Trash2, X } from 'lucide-react';
+import { Plus, Edit, Trash2, X, Upload } from 'lucide-react';
 import { AdminLayout } from '@/components/AdminLayout';
 import { facilityStorage } from '@/utils/facilityStorage';
 import { toast } from 'sonner';
@@ -11,6 +11,9 @@ const AdminFacilities = () => {
   const [items, setItems] = useState<any[]>([]);
   const [modal, setModal] = useState<{ open: boolean; editing: any | null }>({ open: false, editing: null });
   const [form, setForm] = useState({ name: '', description: '', image: '', icon: 'GraduationCap' });
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>('');
+  const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -37,7 +40,53 @@ const AdminFacilities = () => {
       image: f.image || '', 
       icon: f.icon || 'GraduationCap' 
     });
+    setImagePreview(f.image || '');
+    setSelectedImage(null);
     setModal({ open: true, editing: f });
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error('Invalid file type. Only JPEG, PNG, GIF, and WebP are allowed.');
+      return;
+    }
+    
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('File too large. Maximum size is 5MB.');
+      return;
+    }
+    
+    try {
+      setUploading(true);
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        setSelectedImage(result.imageUrl);
+        setForm(prev => ({ ...prev, image: result.imageUrl }));
+        setImagePreview(result.imageUrl);
+        toast.success('Image uploaded successfully');
+      } else {
+        toast.error('Failed to upload image');
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      toast.error('Failed to upload image');
+    } finally {
+      setUploading(false);
+    }
   };
 
   const save = async () => {
@@ -60,6 +109,8 @@ const AdminFacilities = () => {
       
       setModal({ open: false, editing: null });
       setForm({ name: '', description: '', image: '', icon: 'GraduationCap' });
+      setImagePreview('');
+      setSelectedImage(null);
     } catch (error) {
       console.error('Error saving facility:', error);
       toast.error('Failed to save facility');
@@ -90,9 +141,20 @@ const AdminFacilities = () => {
       <div className="grid md:grid-cols-2 gap-4">
         {items.map((f, i) => (
           <motion.div key={f._id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="glass-panel rounded-2xl p-5 flex justify-between items-start">
-            <div>
-              <h3 className="font-display font-bold">{f.name}</h3>
-              <p className="text-sm text-muted-foreground mt-1">{f.description}</p>
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <h3 className="font-display font-bold">{f.name}</h3>
+                <p className="text-sm text-muted-foreground mt-1">{f.description}</p>
+              </div>
+              {f.image && (
+                <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+                  <img 
+                    src={f.image} 
+                    alt={f.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
             </div>
             <div className="flex gap-2">
               <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} onClick={() => openEdit(f)} className="p-2 rounded-lg hover:bg-muted transition-colors">
@@ -119,7 +181,54 @@ const AdminFacilities = () => {
               </div>
               <div className="space-y-4">
                 <input placeholder="Facility Name" value={form.name} onChange={e => setForm(prev => ({ ...prev, name: e.target.value }))} className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 placeholder-gray-400 focus:border-primary focus:ring-2 focus:ring-primary outline-none transition-colors" />
-                <textarea placeholder="Description" rows={3} value={form.description} onChange={e => setForm(prev => ({ ...prev, description: e.target.value }))} className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 placeholder-gray-400 focus:border-primary focus:ring-2 focus:ring-primary outline-none transition-colors resize-none" />
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Facility Image</label>
+                    <div className="flex items-center gap-4">
+                      {imagePreview ? (
+                        <div className="relative">
+                          <img 
+                            src={imagePreview} 
+                            alt="Facility preview" 
+                            className="w-20 h-20 object-cover rounded-lg border border-gray-300"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setImagePreview('');
+                              setForm(prev => ({ ...prev, image: '' }));
+                              setSelectedImage(null);
+                            }}
+                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                          >
+                            <X size={12} />
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
+                          <div className="text-center">
+                            <Upload className="mx-auto h-8 w-8 text-gray-400 mb-2" />
+                            <p className="text-sm text-gray-600">Click to upload image</p>
+                          </div>
+                        </div>
+                      )}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        className="hidden"
+                        id="facility-image-upload"
+                      />
+                      <label
+                        htmlFor="facility-image-upload"
+                        className="cursor-pointer bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:opacity-90 transition-opacity"
+                      >
+                        {uploading ? 'Uploading...' : 'Choose Image'}
+                      </label>
+                    </div>
+                  </div>
+                  <textarea placeholder="Description" rows={3} value={form.description} onChange={e => setForm(prev => ({ ...prev, description: e.target.value }))} className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 placeholder-gray-400 focus:border-primary focus:ring-2 focus:ring-primary outline-none transition-colors resize-none" />
+                </div>
                 <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={save} className="w-full gradient-primary-bg text-primary-foreground py-3 rounded-xl font-semibold">
                   {modal.editing ? 'Update' : 'Add'} Facility
                 </motion.button>

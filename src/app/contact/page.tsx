@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Phone, Mail, MapPin, Send } from 'lucide-react';
 import PageLayout from '@/components/PageLayout';
@@ -8,11 +8,37 @@ import { ScrollReveal } from '@/components/ScrollReveal';
 import { SectionHeading } from '@/components/SectionHeading';
 import { FloatingActions } from '@/components/FloatingActions';
 import MapSection from '@/components/MapSection';
-import { collegeInfo } from '@/data/mockData';
+import { contentStorage } from '@/utils/contentStorage';
 import { toast } from 'sonner';
 
 const ContactPage = () => {
   const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' });
+  const [content, setContent] = useState({
+    phone: '',
+    email: '',
+    address: ''
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Load content from MongoDB
+    const loadContent = async () => {
+      try {
+        const contentData = await contentStorage.getContent();
+        setContent({
+          phone: contentData.phone || '',
+          email: contentData.email || '',
+          address: contentData.address || ''
+        });
+      } catch (error) {
+        console.error('Error loading content:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadContent();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,6 +64,19 @@ const ContactPage = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <PageLayout>
+        <div className="flex items-center justify-center min-h-[50vh]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading contact information...</p>
+          </div>
+        </div>
+      </PageLayout>
+    );
+  }
+
   return (
     <PageLayout>
       <section className="py-12 mesh-bg">
@@ -48,9 +87,9 @@ const ContactPage = () => {
             {/* Info */}
             <div className="space-y-6">
               {[
-                { icon: Phone, label: "Phone", value: `${collegeInfo.phone}, 6262586862`, href: `tel:${collegeInfo.phone}` },
-                { icon: Mail, label: "Email", value: collegeInfo.email, href: `mailto:${collegeInfo.email}` },
-                { icon: MapPin, label: "Address", value: collegeInfo.address },
+                { icon: Phone, label: "Phone", value: content.phone, href: `tel:${content.phone}` },
+                { icon: Mail, label: "Email", value: content.email, href: `mailto:${content.email}` },
+                { icon: MapPin, label: "Address", value: content.address },
               ].map((c, i) => (
                 <ScrollReveal key={c.label} delay={i * 0.1} direction="left">
                   <motion.div whileHover={{ x: 5 }} className="glass-panel rounded-2xl p-6 flex items-start gap-4">

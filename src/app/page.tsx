@@ -10,7 +10,8 @@ import { ScrollReveal } from '@/components/ScrollReveal';
 import { SectionHeading } from '@/components/SectionHeading';
 import { LoadingScreen } from '@/components/LoadingScreen';
 import { FloatingActions } from '@/components/FloatingActions';
-import { stats, facilities, collegeInfo } from '@/data/mockData';
+import { stats, facilities } from '@/data/mockData';
+import { contentStorage } from '@/utils/contentStorage';
 import { courseStorage } from '@/utils/courseStorage';
 import { facilityStorage } from '@/utils/facilityStorage';
 import heroBg from '@/assets/hero-bg.jpg';
@@ -74,6 +75,11 @@ const HomePage = () => {
   const [testimonials, setTestimonials] = useState<any[]>([]);
   const [showNotification, setShowNotification] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [collegeInfo, setCollegeInfo] = useState({
+    name: '',
+    established: 2020,
+    description: ''
+  });
   const heroRef = useRef(null);
 
   useEffect(() => {
@@ -100,14 +106,15 @@ const HomePage = () => {
     fetchTestimonials();
   }, []);
 
-  
   useEffect(() => {
+    // Load courses from MongoDB
     const loadCourses = async () => {
       try {
-        const coursesData = await courseStorage.getCourses();
-        setCoursesData(coursesData);
+        const courses = await courseStorage.getCourses();
+        setCoursesData(courses);
       } catch (error) {
         console.error('Error loading courses:', error);
+        setCoursesData([]);
       }
     };
     
@@ -115,18 +122,6 @@ const HomePage = () => {
       loadCourses();
     }
   }, [mounted]);
-
-  useEffect(() => {
-    // Show popup after a short delay if not already shown
-    if (mounted && !loading) {
-      const popupShown = sessionStorage.getItem('popup-shown');
-      if (!popupShown) {
-        setTimeout(() => {
-          setShowPopup(true);
-        }, 2000); // Show after 2 seconds
-      }
-    }
-  }, [mounted, loading]);
 
   useEffect(() => {
     // Load facilities from MongoDB
@@ -144,6 +139,40 @@ const HomePage = () => {
       loadFacilities();
     }
   }, [mounted]);
+
+  useEffect(() => {
+    // Load college info from MongoDB
+    const loadCollegeInfo = async () => {
+      try {
+        const content = await contentStorage.getContent();
+        setCollegeInfo({
+          name: content.name || '',
+          established: content.established || 2020,
+          description: content.description || ''
+        });
+      } catch (error) {
+        console.error('Error loading college info:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    if (mounted) {
+      loadCollegeInfo();
+    }
+  }, [mounted]);
+
+  useEffect(() => {
+    // Show popup after a short delay if not already shown
+    if (mounted && !loading) {
+      const popupShown = sessionStorage.getItem('popup-shown');
+      if (!popupShown) {
+        setTimeout(() => {
+          setShowPopup(true);
+        }, 2000); // Show after 2 seconds
+      }
+    }
+  }, [mounted, loading]);
 
   const viewFacility = (facility: any) => {
     setSelectedFacility(facility);
@@ -345,10 +374,20 @@ const HomePage = () => {
                   className="glass-panel rounded-2xl p-8 text-center group cursor-pointer"
                   onClick={() => viewFacility(f)}
                 >
-                  <div className="w-16 h-16 rounded-2xl gradient-primary-bg flex items-center justify-center mx-auto mb-4 group-hover:rotate-6 transition-transform">
-                    <GraduationCap size={28} className="text-primary-foreground" />
+                  <div className="w-16 h-16 rounded-2xl overflow-hidden flex items-center justify-center mx-auto mb-4 group-hover:rotate-6 transition-transform">
+                    {f.image ? (
+                      <img 
+                        src={f.image} 
+                        alt={f.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full gradient-primary-bg flex items-center justify-center">
+                        <GraduationCap size={28} className="text-primary-foreground" />
+                      </div>
+                    )}
                   </div>
-                  <h3 className="font-display font-bold text-lg mb-2">{f.title}</h3>
+                  <h3 className="font-display font-bold text-lg mb-2">{f.name}</h3>
                   <p className="text-sm text-muted-foreground">{f.description}</p>
                 </motion.div>
               </ScrollReveal>
@@ -521,8 +560,11 @@ const HomePage = () => {
                 <Link href="/admissions" className="bg-primary-foreground text-primary px-8 py-3 rounded-xl font-semibold hover:opacity-90 transition-opacity">
                   Apply Now
                 </Link>
-                <a href="tel:8460401798" className="border border-primary-foreground/30 text-primary-foreground px-8 py-3 rounded-xl font-semibold hover:bg-primary-foreground/10 transition-colors">
-                  Call: 8460401798
+                <a href="tel:8989115868" className="border border-primary-foreground/30 text-primary-foreground px-8 py-3 rounded-xl font-semibold hover:bg-primary-foreground/10 transition-colors">
+                  Call: 8989115868
+                </a>
+                <a href="tel:6262586862" className="border border-primary-foreground/30 text-primary-foreground px-8 py-3 rounded-xl font-semibold hover:bg-primary-foreground/10 transition-colors">
+                  Call: 6262586862
                 </a>
               </div>
             </div>
