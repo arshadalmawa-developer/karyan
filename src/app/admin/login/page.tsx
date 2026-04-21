@@ -50,54 +50,95 @@ export default function AdminLogin() {
 
   if (showOTP) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 to-secondary/5 px-4">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-primary/5 to-secondary/10 px-4">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+          initial={{ opacity: 0, scale: 0.9, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
           className="w-full max-w-md"
         >
-          <div className="glass-panel rounded-2xl p-8">
+          <div className="glass-panel rounded-3xl p-8 shadow-2xl backdrop-blur-lg border border-white/10">
             <div className="text-center mb-8">
-              <div className="flex justify-center mb-4">
-                <div className="w-32 h-32 rounded-full flex items-center justify-center">
-                  <img src={logo.src} alt="Karyon College" className="w-28 h-28 object-contain" />
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.2, duration: 0.5 }}
+                className="flex justify-center mb-6"
+              >
+                <div className="w-28 h-28 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg p-3">
+                  <img src={logo.src} alt="Karyon College" className="w-full h-full object-contain" />
                 </div>
-              </div>
-              <h1 className="text-2xl font-display font-bold gradient-text mb-2">
+              </motion.div>
+              <motion.h1 
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3, duration: 0.5 }}
+                className="text-3xl font-display font-bold gradient-text mb-3"
+              >
                 Verify OTP
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                Enter 6-digit code sent to {email}
-              </p>
+              </motion.h1>
+              <motion.p 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4, duration: 0.5 }}
+                className="text-sm text-muted-foreground"
+              >
+                Enter 6-digit code sent to <span className="font-medium text-foreground">{email}</span>
+              </motion.p>
             </div>
 
             {error && (
               <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="p-3 rounded-lg text-sm bg-destructive/10 text-destructive"
+                initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.3 }}
+                className="p-4 rounded-xl text-sm bg-destructive/10 text-destructive border border-destructive/20 mb-6"
               >
                 {error}
               </motion.div>
             )}
 
-            <div className="space-y-2">
-              <label htmlFor="otp" className="text-sm font-medium text-foreground">
+            <div className="space-y-4 mb-8">
+              <motion.label 
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.5, duration: 0.4 }}
+                htmlFor="otp" 
+                className="text-sm font-semibold text-foreground flex items-center gap-2"
+              >
+                <div className="w-4 h-4 rounded-full bg-primary/20 flex items-center justify-center">
+                  <div className="w-2 h-2 rounded-full bg-primary" />
+                </div>
                 OTP Code
-              </label>
-              <input
-                key="otp-input"
-                id="otp"
-                type="text"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                placeholder="Enter 6-digit code"
-                className="w-full px-4 py-3 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-center text-2xl font-mono"
-                maxLength={6}
-                required
-                autoComplete="off"
-              />
+              </motion.label>
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6, duration: 0.4 }}
+                className="relative"
+              >
+                <input
+                  key="otp-input"
+                  id="otp"
+                  type="text"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                  placeholder="000000"
+                  className="w-full px-6 py-4 rounded-2xl border-2 border-border bg-background/50 backdrop-blur-sm focus:outline-none focus:ring-4 focus:ring-primary/20 focus:border-primary transition-all text-center text-3xl font-mono font-bold tracking-widest placeholder:text-border/50"
+                  maxLength={6}
+                  required
+                  autoComplete="off"
+                />
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-primary/5 to-secondary/5 pointer-events-none" />
+              </motion.div>
+              <motion.p 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.7, duration: 0.3 }}
+                className="text-xs text-muted-foreground text-center"
+              >
+                Enter the 6-digit verification code
+              </motion.p>
             </div>
 
             <motion.button
@@ -130,12 +171,47 @@ export default function AdminLogin() {
                 setIsLoading(false);
               }}
               disabled={isLoading || otp.length !== 6}
-              whileHover={{ scale: 1.02 }}
+              whileHover={{ scale: 1.02, y: -2 }}
               whileTap={{ scale: 0.98 }}
-              className="w-full py-3 rounded-lg gradient-primary-bg text-primary-foreground font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8, duration: 0.5 }}
+              className="w-full py-4 rounded-2xl gradient-primary-bg text-primary-foreground font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 relative overflow-hidden group"
             >
-              {isLoading ? 'Verifying...' : 'Verify OTP'}
+              <span className="relative z-10">
+                {isLoading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                      className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full"
+                    />
+                    Verifying...
+                  </span>
+                ) : (
+                  'Verify OTP'
+                )}
+              </span>
+              <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
             </motion.button>
+
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.9, duration: 0.5 }}
+              className="mt-6 text-center"
+            >
+              <button
+                onClick={() => {
+                  setShowOTP(false);
+                  setOtp('');
+                  setError('');
+                }}
+                className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 mx-auto"
+              >
+                ← Back to Login
+              </button>
+            </motion.div>
           </div>
         </motion.div>
       </div>
