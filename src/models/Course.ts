@@ -24,6 +24,12 @@ const CourseSchema = new mongoose.Schema({
   icon: {
     type: String,
     trim: true
+  },
+  category: {
+    type: String,
+    required: true,
+    enum: ['BSC', 'BCOM', 'BMLT', 'DMLT', 'UPCOMING'],
+    trim: true
   }
 }, {
   timestamps: true
