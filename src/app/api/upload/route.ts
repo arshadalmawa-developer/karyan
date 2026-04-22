@@ -1,6 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile } from 'fs/promises';
+import { v2 as cloudinary } from 'cloudinary';
+import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
+
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'dboftqmhk',
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 export async function POST(request: NextRequest) {
   try {
@@ -25,25 +33,67 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'File too large. Maximum size is 5MB.' }, { status: 400 });
     }
     
-    // Create unique filename
+    // Convert file to buffer for Cloudinary upload
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
+    
+    // Create unique filename for Cloudinary
     const timestamp = Date.now();
-    const filename = `${timestamp}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '')}`;
+    const filename = `facility-${timestamp}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '')}`;
     
-    // Ensure upload directory exists
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'facilities');
+    let imageUrl = '';
+    let uploadMethod = '';
     
-    // Save file
-    const filePath = path.join(uploadDir, filename);
-    await writeFile(filePath, buffer);
-    
-    const imageUrl = `/uploads/facilities/${filename}`;
-    console.log('DEBUG: Image uploaded successfully:', imageUrl);
+    try {
+      // Try to upload to Cloudinary first
+      const result = await new Promise((resolve, reject) => {
+        cloudinary.uploader.upload_stream(
+          {
+            resource_type: 'image',
+            public_id: filename,
+            folder: 'facilities',
+            format: file.type.split('/')[1], // Get format from file type
+          },
+          (error, result) => {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(result);
+            }
+          }
+        ).end(buffer);
+      });
+      
+      imageUrl = (result as any).secure_url;
+      uploadMethod = 'Cloudinary';
+      console.log('DEBUG: Image uploaded to Cloudinary successfully:', imageUrl);
+      
+    } catch (cloudinaryError) {
+      console.warn('Cloudinary upload failed, falling back to local storage:', cloudinaryError.message);
+      
+      // Fallback to local storage
+      try {
+        const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'facilities');
+        
+        // Ensure upload directory exists
+        await mkdir(uploadDir, { recursive: true });
+        
+        const filePath = path.join(uploadDir, filename);
+        await writeFile(filePath, buffer);
+        
+        imageUrl = `/uploads/facilities/${filename}`;
+        uploadMethod = 'Local';
+        console.log('DEBUG: Image uploaded locally:', imageUrl);
+      } catch (localError) {
+        console.error('Local storage also failed:', localError);
+        throw new Error('Both Cloudinary and local storage failed');
+      }
+    }
     
     return NextResponse.json({ 
-      message: 'Image uploaded successfully',
-      imageUrl: imageUrl 
+      message: `Image uploaded successfully via ${uploadMethod}`,
+      imageUrl: imageUrl,
+      uploadMethod: uploadMethod
     });
     
   } catch (error) {
